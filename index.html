@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
+    <title>Login - Bobzo</title>
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: url("./assets/images/trenerzy.webp") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      #main-content {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        text-align: center;
+      }
+      #login-container {
+        background: rgba(0, 0, 0, 0.7);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 400px; /* Limit the maximum width for better responsiveness */
+        width: 100%;
+      }
+      #login-container h1 {
+        margin-bottom: 20px;
+        font-size: 2em;
+      }
+      #logo {
+        margin-bottom: 20px; /* Space between logo and login button */
+        width: 120px; /* Adjust logo size as needed */
+        display: block; /* Ensure logo is displayed as a block element */
+        margin-left: auto; /* Center horizontally */
+        margin-right: auto; /* Center horizontally */
+      }
+      #login-container a {
+        display: inline-block;
+        background: #7289da;
+        color: #fff;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 1.2em;
+      }
+      #login-container a:hover {
+        background: #5b6eae;
+      }
+      .footer {
+        padding: 20px;
+        background-color: var(--card-background);
+        border-top: 1px solid var(--primary-color);
+        text-align: center;
+        color: var(--text-color);
+      }
+      .footer a {
+        color: var(--link-color);
+        font-weight: bold;
+      }
+      .footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main-content">
+      <div id="login-container">
+        <h1>Welcome to BOBZO</h1>
+        <img id="logo" src="./assets/images/logo.png" alt="App Logo" />
+        <a
+          href="https://discord.com/oauth2/authorize?client_id=1105093704215187456&redirect_uri=http%3A%2F%2Flocalhost%3A55055%2Fauth%2Fcallback&response_type=code&scope=identify"
+        >
+          Login with Discord
+        </a>
+      </div>
+    </div>
+
+    <script>
+      window.onload = () => {
+        const fragment = new URLSearchParams(window.location.hash.slice(1));
+        const [accessToken, tokenType] = [fragment.get("access_token"), fragment.get("token_type")];
+
+        console.log("Access Token:", accessToken); // Log access token
+        console.log("Token Type:", tokenType); // Log token type
+
+        if (!accessToken) {
+          document.getElementById("login-container").style.display = "block";
+        } else {
+          fetch("https://discord.com/api/users/@me", {
+            headers: {
+              authorization: `${tokenType} ${accessToken}`,
+            },
+          })
+            .then((result) => result.json())
+            .then((response) => {
+              console.log("User Info Response:", response); // Log user info response
+              const { username, discriminator } = response;
+              document.getElementById("login-container").innerHTML = `<h1>Welcome, ${username}#${discriminator}!</h1>`;
+            })
+            .catch((error) => {
+              console.error("Error fetching user info:", error); // Log errors
+            });
+        }
+      };
+    </script>
+  </body>
+</html>

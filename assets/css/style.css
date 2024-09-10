@@ -1,35 +1,197 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
+/* General styles */
+:root {
+  --background-color: #f0f4f8;
+  --text-color: #333;
+  --card-background: #ffffff;
+  --primary-color: #007bff;
+  --link-color: #007bff;
+  --button-background: #007bff;
+  --button-text: #ffffff;
+  --button-hover: #0056b3;
+  --button-red: #ff4d4d;
+  --button-red-hover: #e60000;
 }
 
-.container {
-  width: 80%;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 h1 {
-  color: #0073e6;
+  margin-bottom: 20px;
+  color: var(--primary-color);
+}
+
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.button {
+  background-color: var(--button-background);
+  color: var(--button-text);
+  border: none;
+  border-radius: 8px; /* Increased border-radius for rounded corners */
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 16px;
   text-align: center;
+  display: inline-block;
+  margin: 10px;
+  transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transition for hover effects */
 }
 
-h2 {
-  color: #005bb5;
-}
-p {
-  line-height: 1.6;
+.button:hover {
+  background-color: var(--button-hover);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect on hover */
 }
 
+/* Header Styles */
+.header {
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--primary-color);
+  padding: 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.header-main {
+  text-align: center;
+  flex: 1;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--link-color);
+  font-weight: bold;
+  margin: 0 10px;
+  font-size: 1.1em;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+}
+
+/* Avatar Container Styles */
+.avatar-container {
+  position: absolute;
+  right: 35px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#avatar {
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  border: 3px solid var(--primary-color);
+  cursor: pointer;
+}
+
+.user-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  min-width: 200px;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-menu.show {
+  display: flex;
+}
+
+.user-menu a {
+  display: block;
+  color: var(--button-text);
+  background: var(--primary-color);
+  font-weight: bold;
+  padding: 10px;
+  margin: 3px 0;
+  text-decoration: none;
+  width: 90%;
+  text-align: center;
+  border-radius: 8px;
+  transition: background-color 0.3s, border-radius 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+.user-menu a:hover {
+  background: var(--button-hover);
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+#logout-button {
+  background-color: var(--button-red-hover);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  width: auto;
+}
+
+#logout-button:hover {
+  background-color: var(--button-red);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer Styles */
 .footer {
+  padding: 20px;
+  background-color: var(--card-background);
+  border-top: 1px solid var(--primary-color);
   text-align: center;
-  padding: 10px 0;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
+  margin-top: auto; /* Ensures footer is pushed to the bottom */
+}
+
+/* Main Content Area */
+main {
+  flex: 1;
+  padding-top: 80px; /* Adjust this value to match the height of the fixed header */
 }
