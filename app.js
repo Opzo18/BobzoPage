@@ -10,7 +10,24 @@ const config = require("../src/config");
 const client = require("../index.js"); // Import the client instance
 
 const app = express();
-const port = config.web.port;
+
+const botTestingMode = config.botTestingMode;
+let port;
+let address;
+let redirectUri;
+let cookie;
+
+if (botTestingMode === true) {
+  address = "http://localhost";
+  redirectUri = "http://localhost:55055/auth/callback";
+  port = "55055";
+  cookie = false;
+} else {
+  address = config.web.address;
+  redirectUri = config.web.redirectUri;
+  port = config.web.port;
+  cookie = config.web.cookie;
+}
 
 // Set up session middleware
 app.use(
@@ -18,7 +35,7 @@ app.use(
     secret: crypto.randomBytes(64).toString("hex"),
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }, // should be true in production when using HTTPS
+    cookie: { secure: cookie },
   })
 );
 
@@ -28,7 +45,7 @@ app.use(express.static(path.join(__dirname)));
 // Discord OAuth2 login route
 app.get("/login", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${config.clientID}&redirect_uri=${encodeURIComponent(
-    config.web.redirectUri
+    redirectUri
   )}&response_type=code&scope=identify`;
   console.log("Redirecting to:".cyan, discordAuthUrl); // Log redirect URL with color
   res.redirect(discordAuthUrl);
@@ -145,5 +162,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`.green);
+  client.log(`Server is running on ${address}:${port}`.green);
 });
