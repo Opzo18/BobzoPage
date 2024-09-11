@@ -5,27 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Settings</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
-
     <link id="theme-link" rel="stylesheet" href="../assets/css/light-theme.css" />
     <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
   </head>
   <body>
-    <header></header>
+    <!-- Container for the sidebar and main content -->
+    <div class="container">
+      <!-- Sidebar will be loaded dynamically here -->
+      <aside class="sidebar"></aside>
 
-    <main>
-      <div class="settings-container">
+      <!-- Main content -->
+      <div class="main-content">
         <h1>Settings</h1>
-        <div class="button-container">
-          <button id="theme-toggle" class="button">Switch to Dark Mode</button>
-          <a href="../pages/dashboard.html" class="button">Go Back</a>
+        <div class="settings-container">
+          <div class="button-container">
+            <button id="theme-toggle" class="button">Switch to Dark Mode</button>
+            <a href="../pages/dashboard.html" class="button">Go Back</a>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
 
+    <!-- Footer will be loaded dynamically -->
     <footer></footer>
 
     <script src="../assets/js/settings.js"></script>
     <script src="../assets/js/loadHeaderFooter.js"></script>
-    <script src="../assets/js/applyTheme.js"></script>
   </body>
 </html>

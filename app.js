@@ -8,6 +8,7 @@ const path = require("path");
 const colors = require("colors");
 const config = require("../src/config");
 const client = require("../index.js"); // Import the client instance
+const cors = require("cors"); // Import cors
 
 const app = express();
 
@@ -39,6 +40,15 @@ app.use(
   })
 );
 
+// Enable CORS for the frontend
+app.use(
+  cors({
+    origin: `${address}:${port}`, // Allow requests from this frontend URL (adjust the port if needed)
+    methods: ["GET", "POST"],
+    credentials: true, // Allow credentials like cookies to be sent
+  })
+);
+
 // Serve static files from the BobzoPage directory
 app.use(express.static(path.join(__dirname)));
 
@@ -47,8 +57,8 @@ app.get("/login", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${config.clientID}&redirect_uri=${encodeURIComponent(
     redirectUri
   )}&response_type=code&scope=identify`;
-  console.log("Redirecting to:".cyan, discordAuthUrl); // Log redirect URL with color
-  res.redirect(discordAuthUrl);
+  console.log("Providing login URL:", discordAuthUrl); // Log the URL being provided
+  res.json({ loginUrl: discordAuthUrl });
 });
 
 // Redirect URI after Discord login
@@ -69,7 +79,7 @@ app.get("/auth/callback", async (req, res) => {
         client_secret: config.clientSecret,
         grant_type: "authorization_code",
         code: code,
-        redirect_uri: config.web.redirectUri,
+        redirect_uri: redirectUri,
         scope: "identify",
       }),
       {
@@ -110,7 +120,7 @@ app.get("/auth/callback", async (req, res) => {
 app.get("/dashboard", (req, res) => {
   if (!req.session.user) {
     console.log("User not logged in, redirecting to /login".magenta);
-    return res.redirect("/login");
+    return res.redirect("/");
   }
 
   const dashboardPath = path.join(__dirname, "pages", "dashboard.html");
@@ -144,13 +154,13 @@ app.get("/logout", (req, res) => {
 });
 
 // API route to provide bot stats
-app.get("/api/bot-stats", (req, res) => {
+app.get("/api/bot-stats", async (req, res) => {
   try {
-    const stats = client.getBotStats(); // Use the getBotStats method from client
+    const stats = await client.getBotStats();
     res.json(stats);
   } catch (error) {
     console.error("Error fetching bot stats:", error);
-    res.status(500).json({ error: "Error fetching bot stats" });
+    res.status(500).json({ error: "Failed to fetch bot stats" });
   }
 });
 
