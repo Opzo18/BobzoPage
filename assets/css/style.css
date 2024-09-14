@@ -10,7 +10,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* background-color: #1e1e2e;*/
   background: linear-gradient(rgba(49, 43, 73, 1) 0%, rgba(26, 26, 35, 1) 100%);
   color: white;
 }
@@ -41,6 +40,7 @@ body {
   background-color: #2a2a40;
   padding: 20px;
   border-radius: 10px;
+  border: 1px #fff solid;
   width: 30%;
 }
 
@@ -52,21 +52,4 @@ body {
 .stats-card p {
   font-size: 18px;
   margin-bottom: 10px;
-}
-
-footer {
-  background-color: #282838;
-  padding: 15px;
-  text-align: center;
-  color: white;
-  margin-top: auto;
-}
-
-footer a {
-  color: #00ae86;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
 }
