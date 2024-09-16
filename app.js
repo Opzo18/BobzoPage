@@ -164,6 +164,23 @@ app.get("/api/bot-stats", async (req, res) => {
   }
 });
 
+// API route to provide command info
+app.get("/api/commands", (req, res) => {
+  try {
+    // Assuming commands are in `client.commands`
+    const commands = Array.from(client.commands.values()).map((cmd) => ({
+      name: cmd.prefixData.name,
+      description: cmd.prefixData.description || "No description provided.",
+      usage: cmd.prefixData.usage || "No usage details.",
+      category: cmd.prefixData.category || "No category provided.",
+    }));
+    res.json(commands);
+  } catch (error) {
+    console.error("Error fetching commands:", error);
+    res.status(500).json({ error: "Failed to fetch commands" });
+  }
+});
+
 // Serve index.html
 app.get("/", (req, res) => {
   const indexPath = path.join(__dirname, "index.html");

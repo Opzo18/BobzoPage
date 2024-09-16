@@ -14,10 +14,63 @@ body {
   color: white;
 }
 
+/* Sidebar styling */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(rgba(41, 41, 56, 1) 0%, rgba(71, 71, 120, 1) 100%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed; /* Make sidebar fixed */
+  top: 0;
+  left: 0;
+  height: 100vh; /* Full viewport height */
+  overflow-y: auto; /* Add scrollbar if content overflows */
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.sidebar .logo img {
+  width: 60px;
+}
+
+.sidebar span {
+  color: white;
+  margin: 10px 0;
+}
+
+.sidebar .nav {
+  list-style-type: none;
+  padding: 20px 0;
+}
+
+.sidebar .nav li {
+  margin: 15px 0;
+}
+
+.sidebar .nav li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+  background: rgba(26, 26, 35, 1);
+  border-radius: 5px;
+  text-align: center;
+}
+
+.sidebar .nav li a:hover {
+  background-color: #4a4a68;
+}
+
 /* Container for the page */
 .container {
   display: flex;
   flex-grow: 1;
+  margin-left: 250px; /* Add margin to accommodate fixed sidebar */
 }
 
 /* Main content styling */
@@ -52,4 +105,38 @@ body {
 .stats-card p {
   font-size: 18px;
   margin-bottom: 10px;
+}
+
+/* Commands */
+.command-card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin: 10px 0;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.command-card:hover {
+  border-color: #00ae86;
+}
+
+.command-header {
+  background-color: #512c4d;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.command-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.command-details {
+  padding: 10px;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.command-details p {
+  margin: 0;
 }
