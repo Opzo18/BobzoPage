@@ -17,22 +17,28 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((response) => response.json())
     .then((commands) => {
       const commandsList = document.getElementById("commands-list");
+
       commands.forEach((command) => {
         const commandCard = document.createElement("div");
         commandCard.className = "command-card";
 
         const commandHeader = document.createElement("div");
         commandHeader.className = "command-header";
+
+        // Escape any < or > in the usage string
+        const escapedUsage = escapeHtml(command.usage);
+        const escapedDescription = escapeHtml(command.description);
+
         commandHeader.innerHTML = `
             <h2>${command.name}</h2>
-            <p><strong>Usage:</strong> ${command.usage}</p>
+            <p><strong>Usage:</strong> ${command.name} ${escapedUsage}</p>
           `;
 
         const commandDetails = document.createElement("div");
         commandDetails.className = "command-details";
         commandDetails.style.display = "none"; // Initially hidden
         commandDetails.innerHTML = `
-            <p><strong>Description:</strong> ${command.description}</p>
+            <p><strong>Description:</strong> ${escapedDescription}</p>
             <p><strong>Category:</strong> ${command.category}</p>
           `;
 
@@ -56,3 +62,8 @@ document.addEventListener("DOMContentLoaded", function () {
     })
     .catch(console.error);
 });
+
+// Function to escape HTML characters
+function escapeHtml(text) {
+  return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

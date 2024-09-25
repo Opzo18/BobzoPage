@@ -167,12 +167,11 @@ app.get("/api/bot-stats", async (req, res) => {
 // API route to provide command info
 app.get("/api/commands", (req, res) => {
   try {
-    // Assuming commands are in `client.commands`
     const commands = Array.from(client.commands.values()).map((cmd) => ({
       name: cmd.prefixData.name,
-      description: cmd.prefixData.description || "No description provided.",
-      usage: cmd.prefixData.usage || "No usage details.",
-      category: cmd.prefixData.category || "No category provided.",
+      description: cmd.description || "No description provided.",
+      usage: cmd.usage || "",
+      category: cmd.category || "No category provided.",
     }));
     res.json(commands);
   } catch (error) {
