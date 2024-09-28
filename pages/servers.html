@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobzo - Dashboard</title>
+    <link rel="stylesheet" href="./assets/css/style2.css" />
+    <link rel="shortcut icon" href="./assets/images/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <nav>
+      <img src="./assets/images/logo.png" alt="BobzoAvatar" />
+      <button id="logoutBTN">Logout</button>
+    </nav>
+    <main>
+      <section id="hero">
+        <h1>Welcome to the Dashboard!</h1>
+        <p>Manage your servers and settings here.</p>
+      </section>
+
+      <section id="servers">
+        <h2>Your Servers</h2>
+        <div class="server-list" id="serverList"></div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2024 Bobzo. All rights reserved.</p>
+    </footer>
+
+    <script>
+      async function fetchUserServers() {
+        try {
+          const response = await fetch("/api/user/servers");
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch servers");
+          }
+
+          const servers = await response.json();
+          const serverListDiv = document.getElementById("serverList");
+
+          // Clear existing server list before rendering
+          serverListDiv.innerHTML = "";
+
+          servers.forEach((server) => {
+            if (server.name && server.id) {
+              const serverDiv = document.createElement("div");
+              serverDiv.className = "server-item"; // Add the new class
+              serverDiv.innerHTML = `
+                <img class="server-avatar" src="${server.avatar || "./assets/images/default-avatar.png"}" alt="${server.name} Avatar" />
+                
+                <div>
+                  <h3>Server: ${server.name}</h3>
+                  <p>Server ID: ${server.id}</p>
+                  <button onclick="manageServer('${server.id}')">Manage</button>
+                </div>
+              `;
+              serverListDiv.appendChild(serverDiv);
+            }
+          });
+        } catch (error) {
+          console.error("Error fetching servers:", error);
+          document.getElementById("serverList").innerHTML = "<p>Failed to load servers.</p>";
+        }
+      }
+
+      function manageServer(serverId) {
+        window.location.href = `/pages/serverPanel.html?id=${serverId}`; // Redirect to server management page
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchUserServers);
+
+      document.getElementById("logoutBTN").addEventListener("click", async () => {
+        await fetch("/logout");
+        window.location.href = "/"; // Redirect to homepage after logout
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Panel - Manage Server</title>
+    <link rel="stylesheet" href="../assets/css/style2.css" />
+    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
+  </head>
+  <body>
+    <nav>
+      <img src="../assets/images/logo.png" alt="BobzoAvatar" />
+      <button id="logoutBTN">Logout</button>
+    </nav>
+    <main>
+      <section id="hero">
+        <h1>Server Management Panel</h1>
+        <p>Manage your server's settings and features here.</p>
+      </section>
+
+      <section id="serverDetails">
+        <h2>Server: <span id="serverName"></span></h2>
+        <p>Server ID: <span id="serverId"></span></p>
+        <div id="serverActions">
+          <h3>Settings</h3>
+          <div class="sidebar">
+            <button onclick="showSetting('prefix')">Change Prefix</button>
+            <button onclick="showSetting('welcomeChannel')">Set Welcome Channel</button>
+            <button onclick="showSetting('leaveChannel')">Set Leave Channel</button>
+            <button onclick="showSetting('countingChannel')">Set Counting Channel</button>
+            <button onclick="showSetting('associationsChannel')">Set Associations Channel</button>
+            <button onclick="showSetting('lastLetterChannel')">Set Last Letter Channel</button>
+            <button onclick="showSetting('logChannel')">Set Log Channel</button>
+            <button onclick="showSetting('voiceChannelCreator')">Enable Voice Channel Creator</button>
+          </div>
+          <div id="settingForm" style="display: none">
+            <label for="newSettingValue">New Value:</label>
+            <input type="text" id="newSettingValue" />
+            <button id="saveSettingBtn">Save</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2024 Bobzo. All rights reserved.</p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const serverId = urlParams.get("id");
+
+        try {
+          const response = await fetch(`/api/server/${serverId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch server details");
+          }
+
+          const serverDetails = await response.json();
+          document.getElementById("serverName").textContent = serverDetails.name;
+          document.getElementById("serverId").textContent = serverDetails.id;
+
+          // Add existing settings to the sidebar
+          // You might need to dynamically set the current values here
+        } catch (error) {
+          console.error("Error fetching server details:", error);
+        }
+      });
+
+      function showSetting(setting) {
+        const settingForm = document.getElementById("settingForm");
+        const newSettingValue = document.getElementById("newSettingValue");
+
+        settingForm.style.display = "block";
+        newSettingValue.setAttribute("data-setting", setting); // Store setting type
+        newSettingValue.value = ""; // Clear previous value
+      }
+
+      document.getElementById("saveSettingBtn").addEventListener("click", async () => {
+        const newSettingValue = document.getElementById("newSettingValue").value;
+        const settingType = newSettingValue.getAttribute("data-setting");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const serverId = urlParams.get("id");
+
+        try {
+          await fetch(`/api/server/${serverId}/settings`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ [settingType]: newSettingValue }),
+          });
+
+          alert(`Successfully updated ${settingType}`);
+          document.getElementById("settingForm").style.display = "none"; // Hide form
+        } catch (error) {
+          console.error("Error updating server setting:", error);
+        }
+      });
+    </script>
+  </body>
+</html>

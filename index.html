@@ -3,117 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
-    <title>Login - Bobzo</title>
-    <link rel="stylesheet" href="./assets/css/style.css" />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background: url("./assets/images/trenerzy.webp") no-repeat center center fixed;
-        background-size: cover;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-      #main-content {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #fff;
-        text-align: center;
-      }
-      #login-container {
-        background: rgba(0, 0, 0, 0.7);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 400px; /* Limit the maximum width for better responsiveness */
-        width: 100%;
-      }
-      #login-container h1 {
-        margin-bottom: 20px;
-        font-size: 2em;
-      }
-      #logo {
-        margin-bottom: 20px; /* Space between logo and login button */
-        width: 120px; /* Adjust logo size as needed */
-        display: block; /* Ensure logo is displayed as a block element */
-        margin-left: auto; /* Center horizontally */
-        margin-right: auto; /* Center horizontally */
-      }
-      #login-container a {
-        display: inline-block;
-        background: #7289da;
-        color: #fff;
-        padding: 15px 30px;
-        text-decoration: none;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 1.2em;
-      }
-      #login-container a:hover {
-        background: #5b6eae;
-      }
-      .footer {
-        padding: 20px;
-        background-color: var(--card-background);
-        border-top: 1px solid var(--primary-color);
-        text-align: center;
-        color: var(--text-color);
-      }
-      .footer a {
-        color: var(--link-color);
-        font-weight: bold;
-      }
-      .footer a:hover {
-        text-decoration: underline;
-      }
-    </style>
+    <title>Bobzo - Discord Bot</title>
+    <link rel="stylesheet" href="./assets/css/style2.css" />
+    <link rel="shortcut icon" href="./assets/images/logo.png" type="image/x-icon" />
   </head>
   <body>
-    <div id="main-content">
-      <div id="login-container">
-        <h1>Welcome to BOBZO</h1>
-        <img id="logo" src="./assets/images/logo.png" alt="App Logo" />
-        <a id="login-link" href="#">Login with Discord</a>
-      </div>
-    </div>
+    <nav>
+      <img src="./assets/images/logo.png" alt="BobzoAvatar" />
+      <button id="loginBTN">Login</button>
+    </nav>
+    <main>
+      <section id="hero">
+        <h1>Welcome to Bobzo!</h1>
+        <p>Your all-in-one Discord bot for games, music, and fun!</p>
+        <p>Login to access your dashboard and customize your settings!</p>
+      </section>
+
+      <section id="features">
+        <h2>Features</h2>
+        <ul>
+          <li>🃏 Play Hazard with friends</li>
+          <li>🔊 Create voice channels automatically</li>
+          <li>📜 Log actions and events</li>
+          <li>👋 Welcome message for new members</li>
+        </ul>
+      </section>
+
+      <section id="moderation">
+        <h2>Moderation Commands</h2>
+        <ul>
+          <li>🛠️ /ban - Ban a user from the server</li>
+          <li>🛡️ /kick - Kick a user from the server</li>
+          <li>🔍 /warn - Warn a user for misconduct</li>
+          <li>📋 /mute - Mute a user in voice channels</li>
+        </ul>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2024 Bobzo. All rights reserved.</p>
+      <p>Join our Discord server for more support!</p>
+    </footer>
 
     <script>
-      window.onload = () => {
-        // Fetch the dynamic login URL
-        fetch("/login")
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("login-link").setAttribute("href", data.loginUrl);
-          })
-          .catch((error) => console.error("Error fetching login URL:", error));
-
-        // Handle token in URL fragment
-        const fragment = new URLSearchParams(window.location.hash.slice(1));
-        const accessToken = fragment.get("access_token");
-        const tokenType = fragment.get("token_type");
-
-        if (!accessToken) {
-          document.getElementById("login-container").style.display = "block";
-        } else {
-          fetch("https://discord.com/api/users/@me", {
-            headers: { authorization: `${tokenType} ${accessToken}` },
-          })
-            .then((result) => result.json())
-            .then((response) => {
-              const { username, discriminator } = response;
-              document.getElementById("login-container").innerHTML = `<h1>Welcome, ${username}#${discriminator}!</h1>`;
-            })
-            .catch((error) => console.error("Error fetching user info:", error));
+      document.getElementById("loginBTN").addEventListener("click", async () => {
+        try {
+          const response = await fetch("/login");
+          const data = await response.json();
+          window.location.href = data.loginUrl;
+        } catch (error) {
+          console.error("Error fetching login URL:", error);
         }
-      };
+      });
     </script>
   </body>
 </html>

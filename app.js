@@ -43,13 +43,13 @@ app.use(
 // Enable CORS for the frontend
 app.use(
   cors({
-    origin: `${address}:${port}`, // Allow requests from this frontend URL
+    origin: `${address}:${port}`,
     methods: ["GET", "POST"],
-    credentials: true, // Allow credentials like cookies to be sent
+    credentials: true,
   })
 );
 
-// Serve static files from the BobzoPage directory
+// Serve static files from the current directory
 app.use(express.static(path.join(__dirname)));
 
 // Discord OAuth2 login route
@@ -57,7 +57,7 @@ app.get("/login", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${config.clientID}&redirect_uri=${encodeURIComponent(
     redirectUri
   )}&response_type=code&scope=identify`;
-  console.log("Providing login URL:", discordAuthUrl); // Log the URL being provided
+  console.log("Providing login URL:", discordAuthUrl);
   res.json({ loginUrl: discordAuthUrl });
 });
 
@@ -90,9 +90,7 @@ app.get("/auth/callback", async (req, res) => {
     );
 
     console.log("Token response:", tokenResponse.data);
-    const { access_token, token_type } = tokenResponse.data;
-    console.log("Access Token:", access_token);
-    console.log("Token Type:", token_type);
+    const { access_token } = tokenResponse.data;
 
     if (!access_token) {
       console.log("No access token received");
@@ -106,51 +104,107 @@ app.get("/auth/callback", async (req, res) => {
     });
 
     console.log("User info response:", userResponse.data);
-    const user = userResponse.data;
-    req.session.user = user;
+    req.session.user = userResponse.data;
 
-    res.redirect("/dashboard");
+    // Redirect to the servers page
+    res.redirect("/servers");
   } catch (error) {
     console.error("Error during Discord authentication:", error);
     res.send("Error during Discord authentication");
   }
 });
 
-// Protected route to serve the dashboard page
-app.get("/dashboard", (req, res) => {
+// Protected route to serve the servers page
+app.get("/servers", (req, res) => {
   if (!req.session.user) {
     console.log("User not logged in, redirecting to /login".magenta);
-    return res.redirect("/");
+    return res.redirect("/login");
   }
 
-  const dashboardPath = path.join(__dirname, "pages", "dashboard.html");
-  console.log("Serving file:", dashboardPath); // Log the path being served
+  const serversPath = path.join(__dirname, "pages", "servers.html");
+  console.log("Serving servers file:", serversPath);
 
-  // Send the dashboard HTML page
-  res.sendFile(dashboardPath, (err) => {
+  res.sendFile(serversPath, (err) => {
     if (err) {
-      console.error("Error serving dashboard.html:", err);
-      res.status(500).send("An error occurred while serving the dashboard.");
+      console.error("Error serving servers.html:", err);
+      return res.status(500).send("An error occurred while serving the servers.");
     }
   });
 });
 
-// API route to provide user info to the dashboard
+// Serve the server management page
+app.get("/server/:serverId/manage", (req, res) => {
+  if (!req.session.user) {
+    console.log("User not logged in, redirecting to /login".magenta);
+    return res.redirect("/login");
+  }
+
+  const serverPanelPath = path.join(__dirname, "pages", "serverPanel.html");
+  console.log("Serving server management page:", serverPanelPath);
+
+  res.sendFile(serverPanelPath, (err) => {
+    if (err) {
+      console.error("Error serving serverPanel.html:", err);
+      res.status(500).send("An error occurred while serving the server panel.");
+    }
+  });
+});
+
+// API route to provide user info to the servers
 app.get("/api/userinfo", (req, res) => {
   if (!req.session.user) {
     console.log("Unauthorized access attempt".red);
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  console.log("User info sent to client:", req.session.user); // Log the user info being sent
+  console.log("User info sent to client:", req.session.user);
   res.json(req.session.user);
 });
 
-// Logout route
-app.get("/logout", (req, res) => {
-  req.session.destroy();
-  console.log("User logged out".yellow);
-  res.redirect("/");
+// API route to get user servers
+app.get("/api/user/servers", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  try {
+    const servers = await client.getUserServers(req.session.user.id);
+    res.json(servers);
+  } catch (error) {
+    console.error("Error fetching user servers:", error);
+    res.status(500).json({ error: "Failed to fetch servers" });
+  }
+});
+
+// API route to get server details
+app.get("/api/server/:serverId", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const { serverId } = req.params;
+
+  try {
+    const serverDetails = await client.getServerDetails(serverId, req.session.user.id);
+    res.json(serverDetails);
+  } catch (error) {
+    console.error(`Error fetching details for server ${serverId}:`, error);
+    res.status(500).json({ error: "Failed to fetch server details" });
+  }
+});
+
+app.put("/api/server/:serverId/settings", async (req, res) => {
+  const { serverId } = req.params;
+  const newSettings = req.body;
+
+  try {
+    // Call your updateServerSettings function here
+    await client.updateServerSettings(serverId, newSettings);
+    res.status(200).json({ message: "Settings updated successfully." });
+  } catch (error) {
+    console.error("Error updating settings:", error);
+    res.status(500).json({ message: "Failed to update settings." });
+  }
 });
 
 // API route to provide bot stats
@@ -180,13 +234,21 @@ app.get("/api/commands", (req, res) => {
   }
 });
 
+// Logout route
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  console.log("User logged out".yellow);
+  res.redirect("/");
+});
+
 // Serve index.html
 app.get("/", (req, res) => {
   const indexPath = path.join(__dirname, "index.html");
-  console.log("Serving index file:", indexPath); // Log the path being served
+  console.log("Serving index file:", indexPath);
   res.sendFile(indexPath);
 });
 
+// Start the server
 app.listen(port, () => {
   client.log(`Server is running on ${address}:${port}`.green);
 });
