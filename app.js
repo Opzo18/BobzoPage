@@ -7,8 +7,8 @@ const crypto = require("crypto");
 const path = require("path");
 const colors = require("colors");
 const config = require("../src/config");
-const client = require("../index.js"); // Import the client instance
-const cors = require("cors"); // Import cors
+const client = require("../index.js");
+const cors = require("cors");
 
 const app = express();
 
@@ -43,7 +43,7 @@ app.use(
 // Enable CORS for the frontend
 app.use(
   cors({
-    origin: `${address}:${port}`, // Allow requests from this frontend URL (adjust the port if needed)
+    origin: `${address}:${port}`, // Allow requests from this frontend URL
     methods: ["GET", "POST"],
     credentials: true, // Allow credentials like cookies to be sent
   })
