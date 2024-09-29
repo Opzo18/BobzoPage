@@ -73,121 +73,35 @@
     </footer>
 
     <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const serverId = urlParams.get("id");
-
+      async function loadChannels() {
         try {
-          const response = await fetch(`/api/server/${serverId}`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch server details: " + response.statusText);
-          }
+          const response = await fetch(`/api/server/${serverId}/channels`);
+          const channels = await response.json();
 
-          const serverDetails = await response.json();
-          if (!serverDetails || !serverDetails.name) {
-            throw new Error("Invalid server details received.");
-          }
+          const channelSelects = {
+            welcomeChannelSelect: "welcomeChannel",
+            leaveChannelSelect: "leaveChannel",
+            countingChannelSelect: "countingChannel",
+            associationsChannelSelect: "associationsChannel",
+            lastLetterChannelSelect: "lastLetterChannel",
+            logChannelSelect: "logsChannel",
+          };
 
-          document.getElementById("serverName").textContent = serverDetails.name;
-          document.getElementById("serverId").textContent = serverDetails.id;
-
-          // Populate dropdowns for channel selections
-          const channels = await fetch(`/api/server/${serverId}/channels`);
-          const channelData = await channels.json();
-          populateChannelSelects(channelData);
-        } catch (error) {
-          console.error("Error fetching server details:", error);
-          alert("Error fetching server details. Please check the console for more information.");
-        }
-      });
-
-      function populateChannelSelects(channels) {
-        const channelSelects = [
-          "welcomeChannelSelect",
-          "leaveChannelSelect",
-          "countingChannelSelect",
-          "associationsChannelSelect",
-          "lastLetterChannelSelect",
-          "logChannelSelect",
-        ];
-
-        channelSelects.forEach((selectId) => {
-          const select = document.getElementById(selectId);
-          channels.forEach((channel) => {
-            const option = document.createElement("option");
-            option.value = channel.id;
-            option.textContent = channel.name;
-            select.appendChild(option);
+          Object.keys(channelSelects).forEach((selectId) => {
+            const selectElement = document.getElementById(selectId);
+            channels.forEach((channel) => {
+              const option = document.createElement("option");
+              option.value = channel.id;
+              option.textContent = channel.name;
+              selectElement.appendChild(option);
+            });
           });
-        });
-      }
-
-      // Save Prefix
-      document.getElementById("savePrefixBtn").addEventListener("click", async () => {
-        const newPrefix = document.getElementById("prefixInput").value;
-        await saveSetting("prefix", newPrefix);
-      });
-
-      // Save Welcome Channel
-      document.getElementById("saveWelcomeChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("welcomeChannelSelect").value;
-        await saveSetting("welcomeChannel", selectedChannel);
-      });
-
-      // Save Leave Channel
-      document.getElementById("saveLeaveChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("leaveChannelSelect").value;
-        await saveSetting("leaveChannel", selectedChannel);
-      });
-
-      // Save Counting Channel
-      document.getElementById("saveCountingChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("countingChannelSelect").value;
-        await saveSetting("countingChannel", selectedChannel);
-      });
-
-      // Save Associations Channel
-      document.getElementById("saveAssociationsChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("associationsChannelSelect").value;
-        await saveSetting("associationsChannel", selectedChannel);
-      });
-
-      // Save Last Letter Channel
-      document.getElementById("saveLastLetterChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("lastLetterChannelSelect").value;
-        await saveSetting("lastLetterChannel", selectedChannel);
-      });
-
-      // Save Log Channel
-      document.getElementById("saveLogChannelBtn").addEventListener("click", async () => {
-        const selectedChannel = document.getElementById("logChannelSelect").value;
-        await saveSetting("logChannel", selectedChannel);
-      });
-
-      // Save Voice Channel Creator
-      document.getElementById("saveVoiceChannelCreatorBtn").addEventListener("click", async () => {
-        const isEnabled = document.getElementById("voiceChannelCreatorToggle").checked;
-        await saveSetting("voiceChannelCreator", isEnabled);
-      });
-
-      async function saveSetting(settingType, newValue) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const serverId = urlParams.get("id");
-
-        try {
-          await fetch(`/api/server/${serverId}/settings`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ [settingType]: newValue }),
-          });
-
-          alert(`Successfully updated ${settingType}`);
         } catch (error) {
-          console.error(`Error updating server setting ${settingType}:`, error);
+          console.error("Error loading channels:", error);
         }
       }
+
+      loadChannels();
 
       document.getElementById("logoutBTN").addEventListener("click", async () => {
         await fetch("/logout");

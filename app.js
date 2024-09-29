@@ -9,6 +9,7 @@ const colors = require("colors");
 const config = require("../src/config");
 const client = require("../index.js");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 
@@ -51,6 +52,13 @@ app.use(
 
 // Serve static files from the current directory
 app.use(express.static(path.join(__dirname)));
+
+// Apply rate limiting to all routes
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later.",
+});
 
 // Discord OAuth2 login route
 app.get("/login", (req, res) => {
