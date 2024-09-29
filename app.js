@@ -198,13 +198,20 @@ app.put("/api/server/:serverId/settings", async (req, res) => {
   const newSettings = req.body;
 
   try {
-    // Call your updateServerSettings function here
     await client.updateServerSettings(serverId, newSettings);
     res.status(200).json({ message: "Settings updated successfully." });
   } catch (error) {
     console.error("Error updating settings:", error);
     res.status(500).json({ message: "Failed to update settings." });
   }
+});
+
+app.get("/api/server/:serverId/channels", async (req, res) => {
+  const { serverId } = req.params;
+
+  // Assume you have a method to get channels from the Discord API or your database
+  const channels = await getChannelsFromServer(serverId);
+  res.json(channels);
 });
 
 // API route to provide bot stats

@@ -24,19 +24,46 @@
         <div id="serverActions">
           <h3>Settings</h3>
           <div class="sidebar">
-            <button onclick="showSetting('prefix')">Change Prefix</button>
-            <button onclick="showSetting('welcomeChannel')">Set Welcome Channel</button>
-            <button onclick="showSetting('leaveChannel')">Set Leave Channel</button>
-            <button onclick="showSetting('countingChannel')">Set Counting Channel</button>
-            <button onclick="showSetting('associationsChannel')">Set Associations Channel</button>
-            <button onclick="showSetting('lastLetterChannel')">Set Last Letter Channel</button>
-            <button onclick="showSetting('logChannel')">Set Log Channel</button>
-            <button onclick="showSetting('voiceChannelCreator')">Enable Voice Channel Creator</button>
-          </div>
-          <div id="settingForm" style="display: none">
-            <label for="newSettingValue">New Value:</label>
-            <input type="text" id="newSettingValue" />
-            <button id="saveSettingBtn">Save</button>
+            <div>
+              <label for="prefixInput">Change Prefix:</label>
+              <input type="text" id="prefixInput" placeholder="New prefix" />
+              <button id="savePrefixBtn">Save</button>
+            </div>
+            <div>
+              <label for="welcomeChannelSelect">Set Welcome Channel:</label>
+              <select id="welcomeChannelSelect"></select>
+              <button id="saveWelcomeChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="leaveChannelSelect">Set Leave Channel:</label>
+              <select id="leaveChannelSelect"></select>
+              <button id="saveLeaveChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="countingChannelSelect">Set Counting Channel:</label>
+              <select id="countingChannelSelect"></select>
+              <button id="saveCountingChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="associationsChannelSelect">Set Associations Channel:</label>
+              <select id="associationsChannelSelect"></select>
+              <button id="saveAssociationsChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="lastLetterChannelSelect">Set Last Letter Channel:</label>
+              <select id="lastLetterChannelSelect"></select>
+              <button id="saveLastLetterChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="logChannelSelect">Set Log Channel:</label>
+              <select id="logChannelSelect"></select>
+              <button id="saveLogChannelBtn">Save</button>
+            </div>
+            <div>
+              <label for="voiceChannelCreatorToggle">Enable Voice Channel Creator:</label>
+              <input type="checkbox" id="voiceChannelCreatorToggle" />
+              <button id="saveVoiceChannelCreatorBtn">Save</button>
+            </div>
           </div>
         </div>
       </section>
@@ -53,33 +80,97 @@
         try {
           const response = await fetch(`/api/server/${serverId}`);
           if (!response.ok) {
-            throw new Error("Failed to fetch server details");
+            throw new Error("Failed to fetch server details: " + response.statusText);
           }
 
           const serverDetails = await response.json();
+          if (!serverDetails || !serverDetails.name) {
+            throw new Error("Invalid server details received.");
+          }
+
           document.getElementById("serverName").textContent = serverDetails.name;
           document.getElementById("serverId").textContent = serverDetails.id;
 
-          // Add existing settings to the sidebar
-          // You might need to dynamically set the current values here
+          // Populate dropdowns for channel selections
+          const channels = await fetch(`/api/server/${serverId}/channels`);
+          const channelData = await channels.json();
+          populateChannelSelects(channelData);
         } catch (error) {
           console.error("Error fetching server details:", error);
+          alert("Error fetching server details. Please check the console for more information.");
         }
       });
 
-      function showSetting(setting) {
-        const settingForm = document.getElementById("settingForm");
-        const newSettingValue = document.getElementById("newSettingValue");
+      function populateChannelSelects(channels) {
+        const channelSelects = [
+          "welcomeChannelSelect",
+          "leaveChannelSelect",
+          "countingChannelSelect",
+          "associationsChannelSelect",
+          "lastLetterChannelSelect",
+          "logChannelSelect",
+        ];
 
-        settingForm.style.display = "block";
-        newSettingValue.setAttribute("data-setting", setting); // Store setting type
-        newSettingValue.value = ""; // Clear previous value
+        channelSelects.forEach((selectId) => {
+          const select = document.getElementById(selectId);
+          channels.forEach((channel) => {
+            const option = document.createElement("option");
+            option.value = channel.id;
+            option.textContent = channel.name;
+            select.appendChild(option);
+          });
+        });
       }
 
-      document.getElementById("saveSettingBtn").addEventListener("click", async () => {
-        const newSettingValue = document.getElementById("newSettingValue").value;
-        const settingType = newSettingValue.getAttribute("data-setting");
+      // Save Prefix
+      document.getElementById("savePrefixBtn").addEventListener("click", async () => {
+        const newPrefix = document.getElementById("prefixInput").value;
+        await saveSetting("prefix", newPrefix);
+      });
 
+      // Save Welcome Channel
+      document.getElementById("saveWelcomeChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("welcomeChannelSelect").value;
+        await saveSetting("welcomeChannel", selectedChannel);
+      });
+
+      // Save Leave Channel
+      document.getElementById("saveLeaveChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("leaveChannelSelect").value;
+        await saveSetting("leaveChannel", selectedChannel);
+      });
+
+      // Save Counting Channel
+      document.getElementById("saveCountingChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("countingChannelSelect").value;
+        await saveSetting("countingChannel", selectedChannel);
+      });
+
+      // Save Associations Channel
+      document.getElementById("saveAssociationsChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("associationsChannelSelect").value;
+        await saveSetting("associationsChannel", selectedChannel);
+      });
+
+      // Save Last Letter Channel
+      document.getElementById("saveLastLetterChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("lastLetterChannelSelect").value;
+        await saveSetting("lastLetterChannel", selectedChannel);
+      });
+
+      // Save Log Channel
+      document.getElementById("saveLogChannelBtn").addEventListener("click", async () => {
+        const selectedChannel = document.getElementById("logChannelSelect").value;
+        await saveSetting("logChannel", selectedChannel);
+      });
+
+      // Save Voice Channel Creator
+      document.getElementById("saveVoiceChannelCreatorBtn").addEventListener("click", async () => {
+        const isEnabled = document.getElementById("voiceChannelCreatorToggle").checked;
+        await saveSetting("voiceChannelCreator", isEnabled);
+      });
+
+      async function saveSetting(settingType, newValue) {
         const urlParams = new URLSearchParams(window.location.search);
         const serverId = urlParams.get("id");
 
@@ -89,14 +180,18 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ [settingType]: newSettingValue }),
+            body: JSON.stringify({ [settingType]: newValue }),
           });
 
           alert(`Successfully updated ${settingType}`);
-          document.getElementById("settingForm").style.display = "none"; // Hide form
         } catch (error) {
-          console.error("Error updating server setting:", error);
+          console.error(`Error updating server setting ${settingType}:`, error);
         }
+      }
+
+      document.getElementById("logoutBTN").addEventListener("click", async () => {
+        await fetch("/logout");
+        window.location.href = "/"; // Redirect to homepage after logout
       });
     </script>
   </body>
