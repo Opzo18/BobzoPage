@@ -1,10 +1,14 @@
 /* General Styles */
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #111;
   color: #d1e1e5;
-  margin: 0;
-  padding: 0;
   overflow-x: hidden;
 }
 
@@ -36,6 +40,7 @@ nav img:hover {
 }
 
 nav div a {
+  place-content: center;
   background-color: #333;
   color: #a4d65e;
   text-decoration: none;
@@ -87,6 +92,12 @@ nav button:hover {
 #loginBTN:hover,
 #logoutBTN:hover {
   background-color: #90c651;
+}
+
+@media (max-width: 724px) {
+  nav div {
+    display: none;
+  }
 }
 
 /* Button Styles */
