@@ -18,10 +18,47 @@ nav {
 
 nav img {
   height: 50px;
+  background-color: #333;
+  color: #a4d65e;
+  text-decoration: none;
+  padding: 10px 15px;
+  border: 1px solid #a4d65e;
+  border-radius: 5px;
+  margin: 0 10px;
 }
 
-/* Button Styles */
-button {
+nav img:hover {
+  transform: rotate(360deg);
+  transition: all 0.5s ease;
+  background-color: #a4d65e;
+  color: #111;
+  border: 1px solid #111;
+}
+
+nav div a {
+  background-color: #333;
+  color: #a4d65e;
+  text-decoration: none;
+  padding: 10px 15px;
+  border: 1px solid #a4d65e;
+  border-radius: 5px;
+  margin: 0 10px;
+  transition: all 0.3s ease;
+}
+
+nav div a:hover {
+  background-color: #a4d65e;
+  color: #111;
+}
+
+/* Centering links and moving login button to the right */
+nav div {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+nav button {
   background-color: #333;
   color: #a4d65e;
   border: 1px solid #a4d65e;
@@ -31,7 +68,7 @@ button {
   transition: all 0.3s ease;
 }
 
-button:hover {
+nav button:hover {
   background-color: #a4d65e;
   color: #111;
 }
@@ -50,6 +87,22 @@ button:hover {
 #loginBTN:hover,
 #logoutBTN:hover {
   background-color: #90c651;
+}
+
+/* Button Styles */
+button {
+  background-color: #333;
+  color: #a4d65e;
+  border: 1px solid #a4d65e;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #a4d65e;
+  color: #111;
 }
 
 /* Main Content */
