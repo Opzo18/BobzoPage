@@ -66,7 +66,16 @@ app.get("/login", (req, res) => {
     redirectUri
   )}&response_type=code&scope=identify`;
   console.log("Providing login URL:", discordAuthUrl);
-  res.json({ loginUrl: discordAuthUrl });
+  return res.redirect(discordAuthUrl);
+});
+
+app.get("/api/check-login", (req, res) => {
+  if (req.session.user) {
+    // Assuming you store user info in session
+    res.json({ loggedIn: true });
+  } else {
+    res.json({ loggedIn: false });
+  }
 });
 
 // Redirect URI after Discord login

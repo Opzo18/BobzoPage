@@ -15,7 +15,7 @@
     <main>
       <section id="hero">
         <h1>Welcome to Bobzo!</h1>
-        <p>Your all-in-one Discord bot for games, economy, fun and more!</p>
+        <p>Your all-in-one Discord bot for games, economy, fun, and more!</p>
         <p>Login to access your dashboard and customize your settings!</p>
       </section>
 
@@ -66,15 +66,30 @@
     </footer>
 
     <script>
-      document.getElementById("loginBTN").addEventListener("click", async () => {
+      // Function to check if the user is logged in
+      async function checkLoginStatus() {
         try {
-          const response = await fetch("/login");
+          const response = await fetch("/api/check-login"); // Endpoint to check login status
           const data = await response.json();
-          window.location.href = data.loginUrl;
+
+          if (data.loggedIn) {
+            document.getElementById("loginBTN").textContent = "Panel";
+            document.getElementById("loginBTN").onclick = () => {
+              window.location.href = "/servers"; // Redirect to servers
+            };
+          } else {
+            document.getElementById("loginBTN").textContent = "Login";
+            document.getElementById("loginBTN").onclick = () => {
+              window.location.href = "/login"; // Redirect to login
+            };
+          }
         } catch (error) {
-          console.error("Error fetching login URL:", error);
+          console.error("Error checking login status:", error);
         }
-      });
+      }
+
+      // Check login status on page load
+      window.onload = checkLoginStatus;
     </script>
   </body>
 </html>
