@@ -59,10 +59,26 @@
           <li>🤝 Trading - Trade with friends for a more interactive experience!</li>
         </ul>
       </section>
+
+      <section id="bot-stats">
+        <div>
+          <h2>Some bot info</h2>
+          <p>Bot Ping: <span id="bot-ping">Loading...</span></p>
+          <p>Bot Uptime: <span id="bot-uptime">Loading...</span></p>
+          <p>Database Latency: <span id="db-latency">Loading...</span></p>
+        </div>
+
+        <div>
+          <h2>Statistics</h2>
+          <p>Total Servers: <span id="total-servers">Loading...</span></p>
+          <p>Total Users: <span id="total-users">Loading...</span></p>
+          <p>Total Channels: <span id="total-channels">Loading...</span></p>
+        </div>
+      </section>
     </main>
     <footer>
       <p>&copy; 2024 Bobzo. All rights reserved.</p>
-      <p>Join our Discord server for more support!</p>
+      <p>Join our <a href="https://discord.gg/k4bwRBjstx" target="_blank">Discord</a> server for more support!</p>
     </footer>
 
     <script>
@@ -91,5 +107,6 @@
       // Check login status on page load
       window.onload = checkLoginStatus;
     </script>
+    <script src="../assets/js/botStatistics.js"></script>
   </body>
 </html>
