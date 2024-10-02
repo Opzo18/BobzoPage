@@ -5,6 +5,7 @@ body {
   color: #d1e1e5;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 nav {
@@ -19,7 +20,7 @@ nav img {
   height: 50px;
 }
 
-/* Manage Button Styles */
+/* Button Styles */
 button {
   background-color: #333;
   color: #a4d65e;
@@ -58,11 +59,36 @@ main {
   margin: 0 auto;
 }
 
+section {
+  margin-bottom: 40px; /* Increased spacing between sections */
+}
+
 #hero {
   text-align: center;
   margin-bottom: 40px;
 }
 
+h1 {
+  font-size: 2.5em; /* Larger size for main heading */
+  color: #a4d65e;
+}
+
+h2 {
+  font-size: 1.8em; /* Larger size for section headings */
+  color: #a4d65e;
+  margin-bottom: 10px; /* Space below headings */
+}
+
+ul {
+  list-style-type: none; /* Remove default bullets */
+  padding: 0; /* Remove padding */
+}
+
+ul li {
+  margin: 5px 0; /* Space between list items */
+}
+
+/* Server Section */
 #servers {
   background-color: #1b1b1b;
   border-radius: 10px;
@@ -96,11 +122,18 @@ main {
   margin-right: 15px;
 }
 
-h1,
-h2 {
+/* Footer Styles */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #1b1b1b;
   color: #a4d65e;
+  position: relative;
+  bottom: 0;
+  width: 100%; /* Full width footer */
 }
 
+/* Miscellaneous Styles */
 h3 {
   margin: 0;
   font-size: 1.2em;
@@ -109,12 +142,4 @@ h3 {
 p {
   margin: 5px 0;
   font-size: 0.9em;
-}
-
-/* Footer Styles */
-footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #1b1b1b;
-  color: #a4d65e;
 }

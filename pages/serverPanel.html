@@ -9,7 +9,7 @@
   </head>
   <body>
     <nav>
-      <img src="../assets/images/logo.png" alt="BobzoAvatar" />
+      <a href="/"><img src="../assets/images/logo.png" alt="BobzoAvatar" /></a>
       <button id="logoutBTN">Logout</button>
     </nav>
     <main>
@@ -73,36 +73,6 @@
     </footer>
 
     <script>
-      async function loadChannels() {
-        try {
-          const response = await fetch(`/api/server/${serverId}/channels`);
-          const channels = await response.json();
-
-          const channelSelects = {
-            welcomeChannelSelect: "welcomeChannel",
-            leaveChannelSelect: "leaveChannel",
-            countingChannelSelect: "countingChannel",
-            associationsChannelSelect: "associationsChannel",
-            lastLetterChannelSelect: "lastLetterChannel",
-            logChannelSelect: "logsChannel",
-          };
-
-          Object.keys(channelSelects).forEach((selectId) => {
-            const selectElement = document.getElementById(selectId);
-            channels.forEach((channel) => {
-              const option = document.createElement("option");
-              option.value = channel.id;
-              option.textContent = channel.name;
-              selectElement.appendChild(option);
-            });
-          });
-        } catch (error) {
-          console.error("Error loading channels:", error);
-        }
-      }
-
-      loadChannels();
-
       document.getElementById("logoutBTN").addEventListener("click", async () => {
         await fetch("/logout");
         window.location.href = "/"; // Redirect to homepage after logout
