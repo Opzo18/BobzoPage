@@ -152,6 +152,23 @@ app
     }
   });
 
+app.get("/api/server/:serverId/channels", async (req, res) => {
+  const serverId = req.params.serverId; // Changed from guildId to serverId
+
+  try {
+    const textChannels = await client.getServerTextChannels(serverId); // Pass the correct serverId
+    const voiceChannels = await client.getServerVoiceChannels(serverId); // Pass the correct serverId
+
+    res.json({
+      textChannels,
+      voiceChannels,
+    });
+  } catch (error) {
+    console.error("Error fetching server channels:", error);
+    res.status(500).json({ error: "Failed to fetch server channels" });
+  }
+});
+
 // API route for bot stats
 app.get("/api/bot-stats", async (req, res) => {
   try {

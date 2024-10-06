@@ -98,5 +98,11 @@
     </footer>
 
     <script src="../assets/js/serverPanel.js"></script>
+    <script>
+      document.getElementById("logoutBTN").addEventListener("click", async () => {
+        await fetch("/logout");
+        window.location.href = "/"; // Redirect to homepage after logout
+      });
+    </script>
   </body>
 </html>
