@@ -9,7 +9,7 @@
   </head>
   <body>
     <nav>
-      <a href="/"><img src="./assets/images/logo.png" alt="BobzoAvatar" /></a>
+      <a href="/"><img src="../assets/images/logo.png" alt="BobzoAvatar" /></a>
       <button id="logoutBTN">Logout</button>
     </nav>
     <main>
@@ -74,6 +74,41 @@
     </footer>
 
     <script>
+      // Function to extract server ID from the URL query parameters
+      function getServerIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id"); // Extracts the serverId from the query string
+      }
+
+      // Function to fetch server details from the API
+      async function fetchServerDetails(serverId) {
+        try {
+          const response = await fetch(`/api/server/${serverId}`);
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch server details.");
+          }
+
+          const server = await response.json();
+
+          // Update the page with server details, with fallback values
+          document.getElementById("serverName").textContent = server.name || "Unknown Server";
+          document.getElementById("serverId").textContent = server.id || "Unknown ID";
+        } catch (error) {
+          console.error("Error fetching server details:", error);
+          document.getElementById("serverDetails").innerHTML = "<p>Failed to load server details.</p>";
+        }
+      }
+
+      // When the DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        const serverId = getServerIdFromUrl();
+        if (serverId) {
+          fetchServerDetails(serverId); // Fetch server details if ID is present
+        }
+      });
+
+      // Logout button handler (only keep one instance)
       document.getElementById("logoutBTN").addEventListener("click", async () => {
         await fetch("/logout");
         window.location.href = "/"; // Redirect to homepage after logout

@@ -149,35 +149,6 @@ app.get("/servers", (req, res) => {
   });
 });
 
-// Serve the server management page
-app.get("/server/:serverId/manage", (req, res) => {
-  if (!req.session.user) {
-    console.log("User not logged in, redirecting to /login".magenta);
-    return res.redirect("/login");
-  }
-
-  const serverPanelPath = path.join(__dirname, "pages", "serverPanel.html");
-  console.log("Serving server management page:", serverPanelPath);
-
-  res.sendFile(serverPanelPath, (err) => {
-    if (err) {
-      console.error("Error serving serverPanel.html:", err);
-      res.status(500).send("An error occurred while serving the server panel.");
-    }
-  });
-});
-
-// API route to provide user info to the servers
-app.get("/api/userinfo", (req, res) => {
-  if (!req.session.user) {
-    console.log("Unauthorized access attempt".red);
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  console.log("User info sent to client:", req.session.user);
-  res.json(req.session.user);
-});
-
 // API route to get user servers
 app.get("/api/user/servers", async (req, res) => {
   if (!req.session.user) {
@@ -202,33 +173,20 @@ app.get("/api/server/:serverId", async (req, res) => {
   const { serverId } = req.params;
 
   try {
-    const serverDetails = await client.getServerDetails(serverId, req.session.user.id);
+    const serverDetails = await client.getServerSettings(serverId, req.session.user.id);
+
+    // Log server details to debug
+    console.log("Fetched server details:", serverDetails);
+
+    if (!serverDetails || !serverDetails.name || !serverDetails.id) {
+      return res.status(404).json({ error: "Server details not found" });
+    }
+
     res.json(serverDetails);
   } catch (error) {
     console.error(`Error fetching details for server ${serverId}:`, error);
     res.status(500).json({ error: "Failed to fetch server details" });
   }
-});
-
-app.put("/api/server/:serverId/settings", async (req, res) => {
-  const { serverId } = req.params;
-  const newSettings = req.body;
-
-  try {
-    await client.updateServerSettings(serverId, newSettings);
-    res.status(200).json({ message: "Settings updated successfully." });
-  } catch (error) {
-    console.error("Error updating settings:", error);
-    res.status(500).json({ message: "Failed to update settings." });
-  }
-});
-
-app.get("/api/server/:serverId/channels", async (req, res) => {
-  const { serverId } = req.params;
-
-  // Assume you have a method to get channels from the Discord API or your database
-  const channels = await getChannelsFromServer(serverId);
-  res.json(channels);
 });
 
 // API route to provide bot stats
