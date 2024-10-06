@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname)));
 app.use(express.json()); // To parse JSON bodies
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 1000,
   message: "Too many requests from this IP, please try again later.",
 });
 app.use(limiter);
@@ -194,6 +194,23 @@ app.get("/api/commands", (req, res) => {
     console.error("Error fetching commands:", error);
     res.status(500).json({ error: "Failed to fetch commands" });
   }
+});
+
+// Protected route to serve the commands page
+app.get("/commands", (req, res) => {
+  if (!req.session.user) {
+    console.log("User not logged in, redirecting to /login".magenta);
+    return res.redirect("/login");
+  }
+
+  const serversPath = path.join(__dirname, "pages", "commands.html");
+  console.log("Serving servers file:", serversPath);
+  res.sendFile(serversPath, (err) => {
+    if (err) {
+      console.error("Error serving commands.html:", err);
+      return res.status(500).send("An error occurred while serving the commands.");
+    }
+  });
 });
 
 // Logout route
