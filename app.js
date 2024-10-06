@@ -14,24 +14,12 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 
 const botTestingMode = config.botTestingMode;
-let port;
-let address;
-let redirectUri;
-let cookie;
+const address = botTestingMode ? "http://localhost" : config.web.address;
+const redirectUri = botTestingMode ? "http://localhost:55055/auth/callback" : config.web.redirectUri;
+const port = botTestingMode ? "55055" : config.web.port;
+const cookie = !botTestingMode; // If testing mode, don't use cookies
 
-if (botTestingMode === true) {
-  address = "http://localhost";
-  redirectUri = "http://localhost:55055/auth/callback";
-  port = "55055";
-  cookie = false;
-} else {
-  address = config.web.address;
-  redirectUri = config.web.redirectUri;
-  port = config.web.port;
-  cookie = config.web.cookie;
-}
-
-// Set up session middleware
+// Middleware setup
 app.use(
   session({
     secret: crypto.randomBytes(64).toString("hex"),
@@ -41,24 +29,15 @@ app.use(
   })
 );
 
-// Enable CORS for the frontend
-app.use(
-  cors({
-    origin: `${address}:${port}`,
-    methods: ["GET", "POST"],
-    credentials: true,
-  })
-);
-
-// Serve static files from the current directory
+app.use(cors({ origin: `${address}:${port}`, methods: ["GET", "POST"], credentials: true }));
 app.use(express.static(path.join(__dirname)));
-
-// Apply rate limiting to all routes
+app.use(express.json()); // To parse JSON bodies
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
+app.use(limiter);
 
 // Discord OAuth2 login route
 app.get("/login", (req, res) => {
@@ -66,16 +45,12 @@ app.get("/login", (req, res) => {
     redirectUri
   )}&response_type=code&scope=identify`;
   console.log("Providing login URL:", discordAuthUrl);
-  return res.redirect(discordAuthUrl);
+  res.redirect(discordAuthUrl);
 });
 
+// Check login status
 app.get("/api/check-login", (req, res) => {
-  if (req.session.user) {
-    // Assuming you store user info in session
-    res.json({ loggedIn: true });
-  } else {
-    res.json({ loggedIn: false });
-  }
+  res.json({ loggedIn: !!req.session.user });
 });
 
 // Redirect URI after Discord login
@@ -83,10 +58,7 @@ app.get("/auth/callback", async (req, res) => {
   const code = req.query.code;
   console.log("Authorization code received:", code);
 
-  if (!code) {
-    console.log("No code provided");
-    return res.send("No code provided");
-  }
+  if (!code) return res.send("No code provided");
 
   try {
     const tokenResponse = await axios.post(
@@ -95,35 +67,20 @@ app.get("/auth/callback", async (req, res) => {
         client_id: config.clientID,
         client_secret: config.clientSecret,
         grant_type: "authorization_code",
-        code: code,
+        code,
         redirect_uri: redirectUri,
-        scope: "identify",
       }),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
 
-    console.log("Token response:", tokenResponse.data);
     const { access_token } = tokenResponse.data;
-
-    if (!access_token) {
-      console.log("No access token received");
-      return res.send("No access token received");
-    }
+    if (!access_token) return res.send("No access token received");
 
     const userResponse = await axios.get("https://discord.com/api/users/@me", {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
+      headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    console.log("User info response:", userResponse.data);
     req.session.user = userResponse.data;
-
-    // Redirect to the servers page
     res.redirect("/servers");
   } catch (error) {
     console.error("Error during Discord authentication:", error);
@@ -140,7 +97,6 @@ app.get("/servers", (req, res) => {
 
   const serversPath = path.join(__dirname, "pages", "servers.html");
   console.log("Serving servers file:", serversPath);
-
   res.sendFile(serversPath, (err) => {
     if (err) {
       console.error("Error serving servers.html:", err);
@@ -151,9 +107,7 @@ app.get("/servers", (req, res) => {
 
 // API route to get user servers
 app.get("/api/user/servers", async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
 
   try {
     const servers = await client.getUserServers(req.session.user.id);
@@ -164,43 +118,33 @@ app.get("/api/user/servers", async (req, res) => {
   }
 });
 
-// API route to get and update server details
+// API route for server settings
 app
   .route("/api/server/:serverId")
-  // Existing GET method to fetch server details
   .get(async (req, res) => {
-    if (!req.session.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
 
     const { serverId } = req.params;
     try {
       const serverDetails = await client.getServerSettings(serverId, req.session.user.id);
-
       if (!serverDetails || !serverDetails.name || !serverDetails.id) {
         return res.status(404).json({ error: "Server details not found" });
       }
-
       res.json(serverDetails);
     } catch (error) {
       console.error(`Error fetching details for server ${serverId}:`, error);
       res.status(500).json({ error: "Failed to fetch server details" });
     }
   })
-
-  // New POST method to update server settings
   .post(async (req, res) => {
-    if (!req.session.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
 
     const { serverId } = req.params;
-    const newSettings = req.body; // Assuming settings are sent as JSON
+    const newSettings = req.body;
 
     try {
       await client.updateServerSettings(serverId, newSettings);
       console.log(`Updated settings for server ${serverId}:`, newSettings);
-
       res.json({ message: "Server settings updated successfully" });
     } catch (error) {
       console.error(`Error updating settings for server ${serverId}:`, error);
@@ -208,7 +152,7 @@ app
     }
   });
 
-// API route to provide bot stats
+// API route for bot stats
 app.get("/api/bot-stats", async (req, res) => {
   try {
     const stats = await client.getBotStats();
@@ -219,7 +163,7 @@ app.get("/api/bot-stats", async (req, res) => {
   }
 });
 
-// API route to provide command info
+// API route for command info
 app.get("/api/commands", (req, res) => {
   try {
     const commands = Array.from(client.commands.values()).map((cmd) => ({
