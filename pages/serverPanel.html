@@ -8,82 +8,94 @@
     <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
   </head>
   <body>
-    <div class="container">
-      <h1>Server Settings</h1>
-      <div id="feedback"></div>
-      <!-- For displaying success/error messages -->
+    <nav>
+      <a href="/"><img src="../assets/images/logo.png" alt="BobzoAvatar" /></a>
+      <button id="logoutBTN">Logout</button>
+    </nav>
 
-      <!-- Prefix Setting -->
-      <div class="settings-section">
-        <h2>Prefix</h2>
-        <input type="text" id="prefixInput" placeholder="Enter new prefix" aria-label="Prefix" />
-        <button id="savePrefixBtn">Save Prefix</button>
-      </div>
+    <main>
+      <div class="container">
+        <h1>Server Settings</h1>
+        <div id="feedback"></div>
+        <!-- For displaying success/error messages -->
 
-      <!-- Welcome Channel Setting -->
-      <div class="settings-section">
-        <h2>Welcome Channel</h2>
-        <select id="welcomeChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveWelcomeChannelBtn">Save Welcome Channel</button>
-      </div>
+        <!-- Prefix Setting -->
+        <div class="settings-section">
+          <h2>Prefix</h2>
+          <input type="text" id="prefixInput" placeholder="Enter new prefix" aria-label="Prefix" />
+          <button id="savePrefixBtn">Save Prefix</button>
+        </div>
 
-      <!-- Leave Channel Setting -->
-      <div class="settings-section">
-        <h2>Leave Channel</h2>
-        <select id="leaveChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveLeaveChannelBtn">Save Leave Channel</button>
-      </div>
+        <!-- Welcome Channel Setting -->
+        <div class="settings-section">
+          <h2>Welcome Channel</h2>
+          <select id="welcomeChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveWelcomeChannelBtn">Save Welcome Channel</button>
+        </div>
 
-      <!-- Counting Game Channel Setting -->
-      <div class="settings-section">
-        <h2>Counting Channel</h2>
-        <select id="countingChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveCountingChannelBtn">Save Counting Channel</button>
-      </div>
+        <!-- Leave Channel Setting -->
+        <div class="settings-section">
+          <h2>Leave Channel</h2>
+          <select id="leaveChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveLeaveChannelBtn">Save Leave Channel</button>
+        </div>
 
-      <!-- Associations Game Channel Setting -->
-      <div class="settings-section">
-        <h2>Associations Channel</h2>
-        <select id="associationsChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveAssociationsChannelBtn">Save Associations Channel</button>
-      </div>
+        <!-- Counting Game Channel Setting -->
+        <div class="settings-section">
+          <h2>Counting Channel</h2>
+          <select id="countingChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveCountingChannelBtn">Save Counting Channel</button>
+        </div>
 
-      <!-- Last Letter Game Channel Setting -->
-      <div class="settings-section">
-        <h2>Last Letter Channel</h2>
-        <select id="lastLetterChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveLastLetterChannelBtn">Save Last Letter Channel</button>
-      </div>
+        <!-- Associations Game Channel Setting -->
+        <div class="settings-section">
+          <h2>Associations Channel</h2>
+          <select id="associationsChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveAssociationsChannelBtn">Save Associations Channel</button>
+        </div>
 
-      <!-- Log Channel Setting -->
-      <div class="settings-section">
-        <h2>Log Channel</h2>
-        <select id="logChannelSelect">
-          <!-- Options dynamically populated by JavaScript -->
-        </select>
-        <button id="saveLogChannelBtn">Save Log Channel</button>
-      </div>
+        <!-- Last Letter Game Channel Setting -->
+        <div class="settings-section">
+          <h2>Last Letter Channel</h2>
+          <select id="lastLetterChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveLastLetterChannelBtn">Save Last Letter Channel</button>
+        </div>
 
-      <!-- Voice Channel Creator Setting -->
-      <div class="settings-section">
-        <h2>Voice Channel Creator</h2>
-        <label>
-          <input type="checkbox" id="voiceChannelCreatorToggle" />
-          Enable Voice Channel Creator
-        </label>
-        <button id="saveVoiceChannelCreatorBtn">Save Voice Channel Creator</button>
+        <!-- Log Channel Setting -->
+        <div class="settings-section">
+          <h2>Log Channel</h2>
+          <select id="logChannelSelect">
+            <!-- Options dynamically populated by JavaScript -->
+          </select>
+          <button id="saveLogChannelBtn">Save Log Channel</button>
+        </div>
+
+        <!-- Voice Channel Creator Setting -->
+        <div class="settings-section">
+          <h2>Voice Channel Creator</h2>
+          <label>
+            <input type="checkbox" id="voiceChannelCreatorToggle" />
+            Enable Voice Channel Creator
+          </label>
+          <button id="saveVoiceChannelCreatorBtn">Save Voice Channel Creator</button>
+        </div>
       </div>
-    </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 Bobzo. All rights reserved.</p>
+      <p>Join our <a href="https://discord.gg/k4bwRBjstx" target="_blank">Discord</a> server for more support!</p>
+    </footer>
 
     <script src="../assets/js/serverPanel.js"></script>
   </body>

@@ -17,7 +17,7 @@ const botTestingMode = config.botTestingMode;
 const address = botTestingMode ? "http://localhost" : config.web.address;
 const redirectUri = botTestingMode ? "http://localhost:55055/auth/callback" : config.web.redirectUri;
 const port = botTestingMode ? "55055" : config.web.port;
-const cookie = !botTestingMode;
+const cookie = botTestingMode ? false : config.web.cookie;
 
 // Middleware setup
 app.use(
