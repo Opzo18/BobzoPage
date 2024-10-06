@@ -3,116 +3,86 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Server Panel - Manage Server</title>
+    <title>Server Settings Panel</title>
     <link rel="stylesheet" href="../assets/css/style2.css" />
     <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
   </head>
   <body>
-    <nav>
-      <a href="/"><img src="../assets/images/logo.png" alt="BobzoAvatar" /></a>
-      <button id="logoutBTN">Logout</button>
-    </nav>
-    <main>
-      <section id="hero">
-        <h1>Server Management Panel</h1>
-        <p>Manage your server's settings and features here.</p>
-      </section>
+    <div class="container">
+      <h1>Server Settings</h1>
 
-      <section id="serverDetails">
-        <h2>Server: <span id="serverName"></span></h2>
-        <p>Server ID: <span id="serverId"></span></p>
-        <div id="serverActions">
-          <h3>Settings</h3>
-          <div class="sidebar">
-            <div>
-              <label for="prefixInput">Change Prefix:</label>
-              <input type="text" id="prefixInput" placeholder="New prefix" />
-              <button id="savePrefixBtn">Save</button>
-            </div>
-            <div>
-              <label for="welcomeChannelSelect">Set Welcome Channel:</label>
-              <select id="welcomeChannelSelect"></select>
-              <button id="saveWelcomeChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="leaveChannelSelect">Set Leave Channel:</label>
-              <select id="leaveChannelSelect"></select>
-              <button id="saveLeaveChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="countingChannelSelect">Set Counting Channel:</label>
-              <select id="countingChannelSelect"></select>
-              <button id="saveCountingChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="associationsChannelSelect">Set Associations Channel:</label>
-              <select id="associationsChannelSelect"></select>
-              <button id="saveAssociationsChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="lastLetterChannelSelect">Set Last Letter Channel:</label>
-              <select id="lastLetterChannelSelect"></select>
-              <button id="saveLastLetterChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="logChannelSelect">Set Log Channel:</label>
-              <select id="logChannelSelect"></select>
-              <button id="saveLogChannelBtn">Save</button>
-            </div>
-            <div>
-              <label for="voiceChannelCreatorToggle">Enable Voice Channel Creator:</label>
-              <input type="checkbox" id="voiceChannelCreatorToggle" />
-              <button id="saveVoiceChannelCreatorBtn">Save</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; 2024 Bobzo. All rights reserved.</p>
-      <p>Join our <a href="https://discord.gg/k4bwRBjstx" target="_blank">Discord</a> server for more support!</p>
-    </footer>
+      <!-- Prefix Setting -->
+      <div class="settings-section">
+        <h2>Prefix</h2>
+        <input type="text" id="prefixInput" placeholder="Enter new prefix" />
+        <button id="savePrefixBtn">Save Prefix</button>
+      </div>
 
-    <script>
-      // Function to extract server ID from the URL query parameters
-      function getServerIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get("id"); // Extracts the serverId from the query string
-      }
+      <!-- Welcome Channel Setting -->
+      <div class="settings-section">
+        <h2>Welcome Channel</h2>
+        <select id="welcomeChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveWelcomeChannelBtn">Save Welcome Channel</button>
+      </div>
 
-      // Function to fetch server details from the API
-      async function fetchServerDetails(serverId) {
-        try {
-          const response = await fetch(`/api/server/${serverId}`);
+      <!-- Leave Channel Setting -->
+      <div class="settings-section">
+        <h2>Leave Channel</h2>
+        <select id="leaveChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveLeaveChannelBtn">Save Leave Channel</button>
+      </div>
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch server details.");
-          }
+      <!-- Counting Game Channel Setting -->
+      <div class="settings-section">
+        <h2>Counting Channel</h2>
+        <select id="countingChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveCountingChannelBtn">Save Counting Channel</button>
+      </div>
 
-          const server = await response.json();
+      <!-- Associations Game Channel Setting -->
+      <div class="settings-section">
+        <h2>Associations Channel</h2>
+        <select id="associationsChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveAssociationsChannelBtn">Save Associations Channel</button>
+      </div>
 
-          // Update the page with server details, with fallback values
-          document.getElementById("serverName").textContent = server.name || "Unknown Server";
-          document.getElementById("serverId").textContent = server.id || "Unknown ID";
-        } catch (error) {
-          console.error("Error fetching server details:", error);
-          document.getElementById("serverDetails").innerHTML = "<p>Failed to load server details.</p>";
-        }
-      }
+      <!-- Last Letter Game Channel Setting -->
+      <div class="settings-section">
+        <h2>Last Letter Channel</h2>
+        <select id="lastLetterChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveLastLetterChannelBtn">Save Last Letter Channel</button>
+      </div>
 
-      // When the DOM is fully loaded
-      document.addEventListener("DOMContentLoaded", () => {
-        const serverId = getServerIdFromUrl();
-        if (serverId) {
-          fetchServerDetails(serverId); // Fetch server details if ID is present
-        }
-      });
+      <!-- Log Channel Setting -->
+      <div class="settings-section">
+        <h2>Log Channel</h2>
+        <select id="logChannelSelect">
+          <!-- Options dynamically populated by JavaScript -->
+        </select>
+        <button id="saveLogChannelBtn">Save Log Channel</button>
+      </div>
 
-      // Logout button handler (only keep one instance)
-      document.getElementById("logoutBTN").addEventListener("click", async () => {
-        await fetch("/logout");
-        window.location.href = "/"; // Redirect to homepage after logout
-      });
-    </script>
+      <!-- Voice Channel Creator Setting -->
+      <div class="settings-section">
+        <h2>Voice Channel Creator</h2>
+        <label>
+          <input type="checkbox" id="voiceChannelCreatorToggle" />
+          Enable Voice Channel Creator
+        </label>
+        <button id="saveVoiceChannelCreatorBtn">Save Voice Channel Creator</button>
+      </div>
+    </div>
+
+    <script src="../assets/js/serverPanel.js"></script>
   </body>
 </html>

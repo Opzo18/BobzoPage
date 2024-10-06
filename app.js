@@ -164,30 +164,49 @@ app.get("/api/user/servers", async (req, res) => {
   }
 });
 
-// API route to get server details
-app.get("/api/server/:serverId", async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
-  const { serverId } = req.params;
-
-  try {
-    const serverDetails = await client.getServerSettings(serverId, req.session.user.id);
-
-    // Log server details to debug
-    console.log("Fetched server details:", serverDetails);
-
-    if (!serverDetails || !serverDetails.name || !serverDetails.id) {
-      return res.status(404).json({ error: "Server details not found" });
+// API route to get and update server details
+app
+  .route("/api/server/:serverId")
+  // Existing GET method to fetch server details
+  .get(async (req, res) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
-    res.json(serverDetails);
-  } catch (error) {
-    console.error(`Error fetching details for server ${serverId}:`, error);
-    res.status(500).json({ error: "Failed to fetch server details" });
-  }
-});
+    const { serverId } = req.params;
+    try {
+      const serverDetails = await client.getServerSettings(serverId, req.session.user.id);
+
+      if (!serverDetails || !serverDetails.name || !serverDetails.id) {
+        return res.status(404).json({ error: "Server details not found" });
+      }
+
+      res.json(serverDetails);
+    } catch (error) {
+      console.error(`Error fetching details for server ${serverId}:`, error);
+      res.status(500).json({ error: "Failed to fetch server details" });
+    }
+  })
+
+  // New POST method to update server settings
+  .post(async (req, res) => {
+    if (!req.session.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { serverId } = req.params;
+    const newSettings = req.body; // Assuming settings are sent as JSON
+
+    try {
+      await client.updateServerSettings(serverId, newSettings);
+      console.log(`Updated settings for server ${serverId}:`, newSettings);
+
+      res.json({ message: "Server settings updated successfully" });
+    } catch (error) {
+      console.error(`Error updating settings for server ${serverId}:`, error);
+      res.status(500).json({ error: "Failed to update server settings" });
+    }
+  });
 
 // API route to provide bot stats
 app.get("/api/bot-stats", async (req, res) => {
