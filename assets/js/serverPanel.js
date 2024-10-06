@@ -118,6 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function getServerIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get("serverId");
+    return urlParams.get("id");
   }
 });

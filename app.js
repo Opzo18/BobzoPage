@@ -6,7 +6,7 @@ const querystring = require("querystring");
 const crypto = require("crypto");
 const path = require("path");
 const colors = require("colors");
-const config = require("../src/config");
+const config = require("../src/config.js");
 const client = require("../index.js");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
@@ -17,7 +17,7 @@ const botTestingMode = config.botTestingMode;
 const address = botTestingMode ? "http://localhost" : config.web.address;
 const redirectUri = botTestingMode ? "http://localhost:55055/auth/callback" : config.web.redirectUri;
 const port = botTestingMode ? "55055" : config.web.port;
-const cookie = !botTestingMode; // If testing mode, don't use cookies
+const cookie = !botTestingMode;
 
 // Middleware setup
 app.use(
