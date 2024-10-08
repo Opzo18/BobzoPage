@@ -106,20 +106,46 @@ app.get("/servers", (req, res) => {
 });
 
 // Protected route to serve the servers page
-app.get("/panel", (req, res) => {
+app.get("/panel", async (req, res) => {
+  // Check if user is logged in
   if (!req.session.user) {
     console.log("User not logged in, redirecting to /login".magenta);
     return res.redirect("/login");
   }
 
-  const serversPath = path.join(__dirname, "pages", "serverPanel.html");
-  console.log("Serving servers file:", serversPath);
-  res.sendFile(serversPath, (err) => {
-    if (err) {
-      console.error("Error serving servers.html:", err);
-      return res.status(500).send("An error occurred while serving the servers.");
+  try {
+    // Fetch user's servers
+    const servers = await client.getUserServers(req.session.user.id);
+    const serverID = req.query.id;
+
+    // Check if server ID is provided
+    if (!serverID) {
+      console.log("No server ID provided, redirecting to /servers".magenta);
+      return res.redirect("/servers");
     }
-  });
+
+    // Log user's server IDs
+    const serverIds = servers.map((server) => server.id);
+
+    // Check if the serverID exists in the user's servers
+    if (!serverIds.includes(serverID)) {
+      console.log("Server not found, redirecting to /servers".magenta);
+      return res.redirect("/servers");
+    }
+
+    // If server ID is valid, serve the server panel
+    const serversPath = path.join(__dirname, "pages", "serverPanel.html");
+    console.log("Serving servers file:", serversPath);
+    res.sendFile(serversPath, (err) => {
+      if (err) {
+        console.error("Error serving servers.html:", err);
+        return res.status(500).send("An error occurred while serving the servers.");
+      }
+    });
+  } catch (error) {
+    console.error("Error fetching user servers:", error);
+    return res.status(500).send("Failed to fetch servers.");
+  }
 });
 
 // API route to get user servers
