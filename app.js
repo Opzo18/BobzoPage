@@ -152,19 +152,20 @@ app
     }
   });
 
+// API route to get server avatar
 app.get("/api/server/:serverId/avatar", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
+
   const { serverId } = req.params;
-
   try {
-    // Fetch the server settings/details from the bot client
-    const serverDetails = await client.getServerSettings(serverId);
+    const serverDetails = await client.getServerStats(serverId);
 
-    // If the server does not have an icon, return a default image
-    const avatarURL = serverDetails.icon
-      ? `https://cdn.discordapp.com/icons/${serverId}/${serverDetails.icon}.png`
-      : "/assets/images/default-avatar.png"; // Default avatar if none exists
+    if (!serverDetails || serverDetails.error) {
+      return res.status(404).json({ error: "Server not found" });
+    }
 
-    res.json({ avatarURL });
+    const avatarUrl = serverDetails.overview.iconURL || "./assets/images/discord-avatar.png";
+    res.json({ avatar: avatarUrl });
   } catch (error) {
     console.error(`Error fetching avatar for server ${serverId}:`, error);
     res.status(500).json({ error: "Failed to fetch server avatar" });
@@ -172,11 +173,11 @@ app.get("/api/server/:serverId/avatar", async (req, res) => {
 });
 
 app.get("/api/server/:serverId/channels", async (req, res) => {
-  const serverId = req.params.serverId; // Changed from guildId to serverId
+  const serverId = req.params.serverId;
 
   try {
-    const textChannels = await client.getServerTextChannels(serverId); // Pass the correct serverId
-    const voiceChannels = await client.getServerVoiceChannels(serverId); // Pass the correct serverId
+    const textChannels = await client.getServerTextChannels(serverId);
+    const voiceChannels = await client.getServerVoiceChannels(serverId);
 
     res.json({
       textChannels,

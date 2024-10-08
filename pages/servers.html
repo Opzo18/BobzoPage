@@ -24,6 +24,12 @@
 
       <section id="servers">
         <h2>Your Servers</h2>
+        <div class="loader" id="loader">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
         <div class="server-list" id="serverList"></div>
       </section>
     </main>
@@ -34,6 +40,12 @@
 
     <script>
       async function fetchUserServers() {
+        const loader = document.getElementById("loader");
+        const serverListDiv = document.getElementById("serverList");
+
+        // Show the loader
+        loader.style.display = "block";
+
         try {
           const response = await fetch("/api/user/servers");
 
@@ -42,30 +54,34 @@
           }
 
           const servers = await response.json();
-          const serverListDiv = document.getElementById("serverList");
 
           // Clear existing server list before rendering
           serverListDiv.innerHTML = "";
 
-          servers.forEach((server) => {
+          for (const server of servers) {
             if (server.name && server.id) {
+              const avatarResponse = await fetch(`/api/server/${server.id}/avatar`);
+              const avatarData = await avatarResponse.json();
+
               const serverDiv = document.createElement("div");
               serverDiv.className = "server-item";
               serverDiv.innerHTML = `
-                <img class="server-avatar" src="${server.avatar || "./assets/images/default-avatar.png"}" alt="${server.name} Avatar" />
-                
-                <div>
-                  <h3>Server: ${server.name}</h3>
-                  <p>Server ID: ${server.id}</p>
-                  <button onclick="manageServer('${server.id}')">Manage</button>
-                </div>
-              `;
+                            <img class="server-avatar" src="${avatarData.avatar}" alt="${server.name} Avatar" />
+                            <div>
+                                <h3>Server: ${server.name}</h3>
+                                <p>Server ID: ${server.id}</p>
+                                <button onclick="manageServer('${server.id}')">Manage</button>
+                            </div>
+                        `;
               serverListDiv.appendChild(serverDiv);
             }
-          });
+          }
         } catch (error) {
           console.error("Error fetching servers:", error);
-          document.getElementById("serverList").innerHTML = "<p>Failed to load servers.</p>";
+          serverListDiv.innerHTML = "<p>Failed to load servers.</p>";
+        } finally {
+          // Hide the loader after data is fetched
+          loader.style.display = "none";
         }
       }
 

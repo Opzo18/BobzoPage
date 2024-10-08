@@ -186,10 +186,143 @@ footer {
   padding: 20px;
   background-color: #1b1b1b;
   color: #a4d65e;
-  width: 100%; /* Full width footer */
+  width: 100%;
 }
 
 footer a {
   color: #5e99d6;
   text-decoration: none;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  background-color: #222;
+  border-right: 1px solid #444;
+  padding: 20px;
+  width: 250px;
+  height: 100vh; /* Full height */
+  position: fixed; /* Fixed position */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+/* Sidebar Header */
+
+#server-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#serverAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%; /* Circular avatar */
+  margin-bottom: 10px;
+}
+
+#serverName {
+  font-size: 1.5em;
+  color: #a4d65e;
+}
+
+/* Sidebar Navigation Links */
+.sidebar ul {
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0; /* More spacing between links */
+}
+
+.sidebar ul li a {
+  color: #d1e1e5;
+  text-decoration: none;
+  padding: 10px;
+  display: block; /* Make the whole area clickable */
+  transition: background-color 0.3s;
+}
+
+.sidebar ul li a:hover {
+  background-color: #333; /* Change background on hover */
+  border-radius: 5px; /* Rounded corners on hover */
+}
+
+/* LOADER */
+
+.loader {
+  display: none;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.dot {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+
+.dot:nth-child(1) {
+  background-color: #e74c3c;
+}
+
+.dot:nth-child(2) {
+  background-color: #f1c40f;
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  background-color: #2ecc71;
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-20px);
+  }
+}
+.loader {
+  display: none;
+  text-align: center;
+  margin: 20px auto;
+}
+
+.dot {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin: 0 5px;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite alternate;
+}
+
+.dot:nth-child(1) {
+  background-color: #e74c3c;
+}
+
+.dot:nth-child(2) {
+  background-color: #f1c40f;
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  background-color: #2ecc71;
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-20px);
+  }
 }

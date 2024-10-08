@@ -21,7 +21,7 @@
     <main>
       <div class="sidebar">
         <div id="server-info">
-          <img id="serverAvatar" src="" alt="Server Avatar" />
+          <img id="serverAvatar" src="../assets/images/discord-avatar.png" alt="Server Avatar" />
           <h2 id="serverName">Server Name</h2>
         </div>
         <ul>
@@ -116,7 +116,7 @@
           // Fetch server avatar
           const avatarResponse = await fetch(`/api/server/${serverId}/avatar`);
           const avatarData = await avatarResponse.json();
-          document.getElementById("serverAvatar").src = avatarData.avatarURL;
+          document.getElementById("serverAvatar").src = avatarData.avatar;
 
           // Fetch server name
           const serverResponse = await fetch(`/api/server/${serverId}`);
