@@ -105,6 +105,23 @@ app.get("/servers", (req, res) => {
   });
 });
 
+// Protected route to serve the servers page
+app.get("/panel", (req, res) => {
+  if (!req.session.user) {
+    console.log("User not logged in, redirecting to /login".magenta);
+    return res.redirect("/login");
+  }
+
+  const serversPath = path.join(__dirname, "pages", "serverPanel.html");
+  console.log("Serving servers file:", serversPath);
+  res.sendFile(serversPath, (err) => {
+    if (err) {
+      console.error("Error serving servers.html:", err);
+      return res.status(500).send("An error occurred while serving the servers.");
+    }
+  });
+});
+
 // API route to get user servers
 app.get("/api/user/servers", async (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
