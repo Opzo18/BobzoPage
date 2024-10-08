@@ -13,80 +13,73 @@
       <div id="nav-links">
         <a href="/"><img src="../assets/images/feature.png" alt="" /> Home</a>
         <a href="/servers"><img src="../assets/images/king.png" alt="" /> Servers</a>
-        <a href="/commands"><img src="../assets/images/money-bag.png" alt="" />Commands</a>
+        <a href="/commands"><img src="../assets/images/money-bag.png" alt="" /> Commands</a>
       </div>
       <button id="logoutBTN">Logout</button>
     </nav>
 
     <main>
+      <div class="sidebar">
+        <div id="server-info">
+          <img id="serverAvatar" src="" alt="Server Avatar" />
+          <h2 id="serverName">Server Name</h2>
+        </div>
+        <ul>
+          <li><a href="#prefixSettings">Prefix</a></li>
+          <li><a href="#channelSettings">Channel Settings</a></li>
+          <li><a href="#gameSettings">Game Channels</a></li>
+          <li><a href="#logSettings">Log Channel</a></li>
+          <li><a href="#voiceChannelSettings">Voice Channel Creator</a></li>
+        </ul>
+      </div>
+
       <div class="container">
-        <h1>Server Settings</h1>
         <div id="feedback"></div>
-        <!-- For displaying success/error messages -->
 
         <!-- Prefix Setting -->
-        <div class="settings-section">
+        <div class="settings-category" id="prefixSettings">
           <h2>Prefix</h2>
           <input type="text" id="prefixInput" placeholder="Enter new prefix" aria-label="Prefix" />
           <button id="savePrefixBtn">Save Prefix</button>
         </div>
 
-        <!-- Welcome Channel Setting -->
-        <div class="settings-section">
-          <h2>Welcome Channel</h2>
-          <select id="welcomeChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+        <!-- Channel Settings -->
+        <div class="settings-category" id="channelSettings">
+          <h2>Channel Settings</h2>
+          <h3>Welcome Channel</h3>
+          <select id="welcomeChannelSelect"></select>
           <button id="saveWelcomeChannelBtn">Save Welcome Channel</button>
-        </div>
 
-        <!-- Leave Channel Setting -->
-        <div class="settings-section">
-          <h2>Leave Channel</h2>
-          <select id="leaveChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+          <h3>Leave Channel</h3>
+          <select id="leaveChannelSelect"></select>
           <button id="saveLeaveChannelBtn">Save Leave Channel</button>
         </div>
 
-        <!-- Counting Game Channel Setting -->
-        <div class="settings-section">
-          <h2>Counting Channel</h2>
-          <select id="countingChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+        <!-- Game Channels -->
+        <div class="settings-category" id="gameSettings">
+          <h2>Game Channels</h2>
+          <h3>Counting Channel</h3>
+          <select id="countingChannelSelect"></select>
           <button id="saveCountingChannelBtn">Save Counting Channel</button>
-        </div>
 
-        <!-- Associations Game Channel Setting -->
-        <div class="settings-section">
-          <h2>Associations Channel</h2>
-          <select id="associationsChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+          <h3>Associations Channel</h3>
+          <select id="associationsChannelSelect"></select>
           <button id="saveAssociationsChannelBtn">Save Associations Channel</button>
-        </div>
 
-        <!-- Last Letter Game Channel Setting -->
-        <div class="settings-section">
-          <h2>Last Letter Channel</h2>
-          <select id="lastLetterChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+          <h3>Last Letter Channel</h3>
+          <select id="lastLetterChannelSelect"></select>
           <button id="saveLastLetterChannelBtn">Save Last Letter Channel</button>
         </div>
 
         <!-- Log Channel Setting -->
-        <div class="settings-section">
+        <div class="settings-category" id="logSettings">
           <h2>Log Channel</h2>
-          <select id="logChannelSelect">
-            <!-- Options dynamically populated by JavaScript -->
-          </select>
+          <select id="logChannelSelect"></select>
           <button id="saveLogChannelBtn">Save Log Channel</button>
         </div>
 
         <!-- Voice Channel Creator Setting -->
-        <div class="settings-section">
+        <div class="settings-category" id="voiceChannelSettings">
           <h2>Voice Channel Creator</h2>
           <label>
             <input type="checkbox" id="voiceChannelCreatorToggle" />
@@ -108,6 +101,33 @@
         await fetch("/logout");
         window.location.href = "/"; // Redirect to homepage after logout
       });
+
+      // Helper function to get serverId from URL
+      function getServerIdFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("id");
+      }
+
+      // JavaScript to dynamically load server avatar and name
+      async function loadServerInfo() {
+        const serverId = getServerIdFromUrl();
+
+        try {
+          // Fetch server avatar
+          const avatarResponse = await fetch(`/api/server/${serverId}/avatar`);
+          const avatarData = await avatarResponse.json();
+          document.getElementById("serverAvatar").src = avatarData.avatarURL;
+
+          // Fetch server name
+          const serverResponse = await fetch(`/api/server/${serverId}`);
+          const serverData = await serverResponse.json();
+          document.getElementById("serverName").textContent = serverData.name;
+        } catch (error) {
+          console.error("Error loading server info:", error);
+        }
+      }
+
+      loadServerInfo();
     </script>
   </body>
 </html>

@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const serverDetails = await fetchServerDetails(serverId);
     if (serverDetails) {
-      updateServerName(serverDetails.name); // Populate server name in the UI
+      // updateServerName(serverDetails.name); // Populate server name in the UI
     }
   } catch (error) {
     console.error("Error fetching server details:", error);
@@ -126,14 +126,14 @@ async function saveSetting(serverId, setting) {
 }
 
 // Utility function to update the server name in the UI
-function updateServerName(serverName) {
-  const serverNameElement = document.querySelector("h1"); // You may want a more specific selector
-  if (serverNameElement) {
-    serverNameElement.textContent = `Server Settings for ${serverName}`;
-  } else {
-    console.error("Server name element not found in the HTML.");
-  }
-}
+// function updateServerName(serverName) {
+//   const serverNameElement = document.querySelector("h1"); // You may want a more specific selector
+//   if (serverNameElement) {
+//     serverNameElement.textContent = `Server Settings for ${serverName}`;
+//   } else {
+//     console.error("Server name element not found in the HTML.");
+//   }
+// }
 
 // Utility function to get the server ID from the URL
 function getServerIdFromUrl() {

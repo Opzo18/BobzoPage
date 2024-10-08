@@ -152,6 +152,25 @@ app
     }
   });
 
+app.get("/api/server/:serverId/avatar", async (req, res) => {
+  const { serverId } = req.params;
+
+  try {
+    // Fetch the server settings/details from the bot client
+    const serverDetails = await client.getServerSettings(serverId);
+
+    // If the server does not have an icon, return a default image
+    const avatarURL = serverDetails.icon
+      ? `https://cdn.discordapp.com/icons/${serverId}/${serverDetails.icon}.png`
+      : "/assets/images/default-avatar.png"; // Default avatar if none exists
+
+    res.json({ avatarURL });
+  } catch (error) {
+    console.error(`Error fetching avatar for server ${serverId}:`, error);
+    res.status(500).json({ error: "Failed to fetch server avatar" });
+  }
+});
+
 app.get("/api/server/:serverId/channels", async (req, res) => {
   const serverId = req.params.serverId; // Changed from guildId to serverId
 
