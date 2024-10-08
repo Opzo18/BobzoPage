@@ -50,7 +50,7 @@
           servers.forEach((server) => {
             if (server.name && server.id) {
               const serverDiv = document.createElement("div");
-              serverDiv.className = "server-item"; // Add the new class
+              serverDiv.className = "server-item";
               serverDiv.innerHTML = `
                 <img class="server-avatar" src="${server.avatar || "./assets/images/default-avatar.png"}" alt="${server.name} Avatar" />
                 
