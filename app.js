@@ -31,7 +31,7 @@ app.use(
 
 app.use(cors({ origin: `${address}:${port}`, methods: ["GET", "POST"], credentials: true }));
 app.use(express.static(path.join(__dirname)));
-app.use(express.json()); // To parse JSON bodies
+app.use(express.json());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
@@ -56,9 +56,16 @@ app.get("/api/check-login", (req, res) => {
 // Redirect URI after Discord login
 app.get("/auth/callback", async (req, res) => {
   const code = req.query.code;
-  console.log("Authorization code received:", code);
+  const error = req.query.error;
 
-  if (!code) return res.send("No code provided");
+  if (error) {
+    // console.log("Error during Discord authentication:", error);
+    return res.redirect("/");
+  }
+
+  if (!code) {
+    return res.send("No code provided");
+  }
 
   try {
     const tokenResponse = await axios.post(
@@ -74,7 +81,9 @@ app.get("/auth/callback", async (req, res) => {
     );
 
     const { access_token } = tokenResponse.data;
-    if (!access_token) return res.send("No access token received");
+    if (!access_token) {
+      return res.send("Error retrieving access token");
+    }
 
     const userResponse = await axios.get("https://discord.com/api/users/@me", {
       headers: { Authorization: `Bearer ${access_token}` },
@@ -120,7 +129,7 @@ app.get("/panel", async (req, res) => {
 
     // Check if server ID is provided
     if (!serverID) {
-      console.log("No server ID provided, redirecting to /servers".magenta);
+      // console.log("No server ID provided, redirecting to /servers".magenta);
       return res.redirect("/servers");
     }
 
@@ -129,7 +138,7 @@ app.get("/panel", async (req, res) => {
 
     // Check if the serverID exists in the user's servers
     if (!serverIds.includes(serverID)) {
-      console.log("Server not found, redirecting to /servers".magenta);
+      // console.log("Server not found, redirecting to /servers".magenta);
       return res.redirect("/servers");
     }
 
