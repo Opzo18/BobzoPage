@@ -25,11 +25,11 @@
           <h2 id="serverName">Server Name</h2>
         </div>
         <ul>
-          <li><a href="#prefixSettings">Prefix</a></li>
-          <li><a href="#channelSettings">Channel Settings</a></li>
-          <li><a href="#gameSettings">Game Channels</a></li>
-          <li><a href="#logSettings">Log Channel</a></li>
-          <li><a href="#voiceChannelSettings">Voice Channel Creator</a></li>
+          <li><a href="#prefix-settings">Prefix</a></li>
+          <li><a href="#channel-settings">Channel Settings</a></li>
+          <li><a href="#game-settings">Game Channels</a></li>
+          <li><a href="#log-channel-settings">Log Channel</a></li>
+          <li><a href="#voice-channel-creator-settings">Voice Channel Creator</a></li>
         </ul>
       </div>
 
@@ -37,55 +37,56 @@
         <div id="feedback"></div>
 
         <!-- Prefix Setting -->
-        <div class="settings-category" id="prefixSettings">
+        <div class="settings-category" id="prefix-settings">
           <h2>Prefix</h2>
-          <input type="text" id="prefixInput" placeholder="Enter new prefix" aria-label="Prefix" />
-          <button id="savePrefixBtn">Save Prefix</button>
+          <input type="text" id="prefixInput" class="input-field" placeholder="Enter new prefix" aria-label="Prefix" />
+          <button id="savePrefixBtn" class="save-btn">Save Prefix</button>
         </div>
 
         <!-- Channel Settings -->
-        <div class="settings-category" id="channelSettings">
+        <div class="settings-category" id="channel-settings">
           <h2>Channel Settings</h2>
           <h3>Welcome Channel</h3>
-          <select id="welcomeChannelSelect"></select>
-          <button id="saveWelcomeChannelBtn">Save Welcome Channel</button>
+          <select id="welcomeChannelSelect" class="select-field"></select>
+          <button id="saveWelcomeChannelBtn" class="save-btn">Save Welcome Channel</button>
 
           <h3>Leave Channel</h3>
-          <select id="leaveChannelSelect"></select>
-          <button id="saveLeaveChannelBtn">Save Leave Channel</button>
+          <select id="leaveChannelSelect" class="select-field"></select>
+          <button id="saveLeaveChannelBtn" class="save-btn">Save Leave Channel</button>
         </div>
 
         <!-- Game Channels -->
-        <div class="settings-category" id="gameSettings">
+        <div class="settings-category" id="game-channels">
           <h2>Game Channels</h2>
           <h3>Counting Channel</h3>
-          <select id="countingChannelSelect"></select>
-          <button id="saveCountingChannelBtn">Save Counting Channel</button>
+          <select id="countingChannelSelect" class="select-field"></select>
+          <button id="saveCountingChannelBtn" class="save-btn">Save Counting Channel</button>
 
           <h3>Associations Channel</h3>
-          <select id="associationsChannelSelect"></select>
-          <button id="saveAssociationsChannelBtn">Save Associations Channel</button>
+          <select id="associationsChannelSelect" class="select-field"></select>
+          <button id="saveAssociationsChannelBtn" class="save-btn">Save Associations Channel</button>
 
           <h3>Last Letter Channel</h3>
-          <select id="lastLetterChannelSelect"></select>
-          <button id="saveLastLetterChannelBtn">Save Last Letter Channel</button>
+          <select id="lastLetterChannelSelect" class="select-field"></select>
+          <button id="saveLastLetterChannelBtn" class="save-btn">Save Last Letter Channel</button>
         </div>
 
         <!-- Log Channel Setting -->
-        <div class="settings-category" id="logSettings">
+        <div class="settings-category" id="log-channel-settings">
           <h2>Log Channel</h2>
-          <select id="logChannelSelect"></select>
-          <button id="saveLogChannelBtn">Save Log Channel</button>
+          <h3>Log Channel</h3>
+          <select id="logChannelSelect" class="select-field"></select>
+          <button id="saveLogChannelBtn" class="save-btn">Save Log Channel</button>
         </div>
 
         <!-- Voice Channel Creator Setting -->
-        <div class="settings-category" id="voiceChannelSettings">
+        <div class="settings-category" id="voice-channel-creator-settings">
           <h2>Voice Channel Creator</h2>
           <label>
-            <input type="checkbox" id="voiceChannelCreatorToggle" />
+            <input type="checkbox" id="voiceChannelCreatorToggle" class="toggle-checkbox" />
             Enable Voice Channel Creator
           </label>
-          <button id="saveVoiceChannelCreatorBtn">Save Voice Channel Creator</button>
+          <button id="saveVoiceChannelCreatorBtn" class="save-btn">Save Voice Channel Creator</button>
         </div>
       </div>
     </main>

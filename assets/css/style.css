@@ -200,11 +200,11 @@ footer a {
   border-right: 1px solid #444;
   padding: 20px;
   width: 250px;
-  height: 100vh; /* Full height */
-  position: fixed; /* Fixed position */
-  top: 0; /* Align to the top */
-  left: 0; /* Align to the left */
-  overflow-y: auto; /* Enable scrolling if content overflows */
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
 }
 
 /* Sidebar Header */
@@ -219,7 +219,7 @@ footer a {
 #serverAvatar {
   width: 80px;
   height: 80px;
-  border-radius: 50%; /* Circular avatar */
+  border-radius: 50%;
   margin-bottom: 10px;
 }
 
@@ -234,20 +234,20 @@ footer a {
 }
 
 .sidebar ul li {
-  margin: 15px 0; /* More spacing between links */
+  margin: 15px 0;
 }
 
 .sidebar ul li a {
   color: #d1e1e5;
   text-decoration: none;
   padding: 10px;
-  display: block; /* Make the whole area clickable */
+  display: block;
   transition: background-color 0.3s;
 }
 
 .sidebar ul li a:hover {
-  background-color: #333; /* Change background on hover */
-  border-radius: 5px; /* Rounded corners on hover */
+  background-color: #333;
+  border-radius: 5px;
 }
 
 /* LOADER */
@@ -325,4 +325,90 @@ footer a {
   100% {
     transform: translateY(-20px);
   }
+}
+
+/* ServerPanel */
+.container {
+  margin-left: 270px;
+  padding: 20px;
+  max-width: 800px;
+  background-color: #1b1b1b;
+  border-radius: 10px;
+}
+
+/* Feedback section */
+#feedback {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #222;
+  color: #f1c40f;
+  border-radius: 5px;
+  display: none;
+}
+
+/* Settings Category Styles */
+.settings-category {
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 10px;
+  border: 1px solid #444;
+}
+
+/* Prefix, Channel, Game, and Log Sections */
+#prefix-settings h2,
+#channel-settings h2,
+#game-channels h2,
+#log-channel-settings h2,
+#voice-channel-creator-settings h2 {
+  color: #a4d65e;
+  margin-bottom: 15px;
+}
+
+#prefix-settings h3,
+#channel-settings h3,
+#game-channels h3,
+#log-channel-settings h3,
+#voice-channel-creator-settings h3 {
+  color: #ffffff;
+  margin: 5px;
+}
+
+/* Common input, select, and button styles */
+.input-field,
+.select-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #333;
+  color: #d1e1e5;
+  border: 1px solid #444;
+  border-radius: 5px;
+}
+
+.save-btn {
+  padding: 10px 20px;
+  margin-bottom: 5px;
+  background-color: #333;
+  color: #a4d65e;
+  border: 1px solid #a4d65e;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  background-color: #a4d65e;
+  color: #111;
+}
+
+/* Checkbox and label styling */
+label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.toggle-checkbox {
+  margin-right: 10px;
 }

@@ -299,6 +299,81 @@ app.get("/", (req, res) => {
   res.sendFile(indexPath);
 });
 
+// Custom error handling for specific status codes
+app.get("/error.html", (req, res) => {
+  const { status } = req.query;
+  const errorPath = path.join(__dirname, "pages", "error.html");
+  console.log("Serving error file:", errorPath);
+  res.sendFile(errorPath, (err) => {
+    if (err) {
+      console.error("Error serving error.html:", err);
+      return res.status(500).send("An error occurred while serving the error.");
+    }
+  });
+});
+
+// 400 Bad Request
+app.use((err, req, res, next) => {
+  if (err.status === 400) {
+    return res.status(400).redirect(`/error.html?status=400`);
+  }
+  next(err);
+});
+
+// 401 Unauthorized
+app.use((err, req, res, next) => {
+  if (err.status === 401) {
+    return res.status(401).redirect(`/error.html?status=401`);
+  }
+  next(err);
+});
+
+// 403 Forbidden
+app.use((err, req, res, next) => {
+  if (err.status === 403) {
+    return res.status(403).redirect(`/error.html?status=403`);
+  }
+  next(err);
+});
+
+// 404 Not Found
+app.use((err, req, res, next) => {
+  if (err.status === 404) {
+    return res.status(404).redirect(`/error.html?status=404`);
+  }
+  next(err);
+});
+
+// 405 Method Not Allowed
+app.use((err, req, res, next) => {
+  if (err.status === 405) {
+    return res.status(405).redirect(`/error.html?status=405`);
+  }
+  next(err);
+});
+
+// 500 Internal Server Error
+app.use((err, req, res, next) => {
+  console.error("Internal Server Error:", err); // Log error
+  return res.status(500).redirect(`/error.html?status=500`);
+});
+
+// 502 Bad Gateway
+app.use((err, req, res, next) => {
+  if (err.status === 502) {
+    return res.status(502).redirect(`/error.html?status=502`);
+  }
+  next(err);
+});
+
+// 503 Service Unavailable
+app.use((err, req, res, next) => {
+  if (err.status === 503) {
+    return res.status(503).redirect(`/error.html?status=503`);
+  }
+  next(err);
+});
+
 // Start the server
 app.listen(port, () => {
   client.log(`Server is running on ${address}:${port}`.green);

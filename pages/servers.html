@@ -57,23 +57,27 @@
 
           // Clear existing server list before rendering
           serverListDiv.innerHTML = "";
+          if (servers.length === 0) {
+            // Display message if no servers are found
+            serverListDiv.innerHTML = "<p>No servers found.</p>";
+          } else {
+            for (const server of servers) {
+              if (server.name && server.id) {
+                const avatarResponse = await fetch(`/api/server/${server.id}/avatar`);
+                const avatarData = await avatarResponse.json();
 
-          for (const server of servers) {
-            if (server.name && server.id) {
-              const avatarResponse = await fetch(`/api/server/${server.id}/avatar`);
-              const avatarData = await avatarResponse.json();
-
-              const serverDiv = document.createElement("div");
-              serverDiv.className = "server-item";
-              serverDiv.innerHTML = `
-                            <img class="server-avatar" src="${avatarData.avatar}" alt="${server.name} Avatar" />
-                            <div>
-                                <h3>Server: ${server.name}</h3>
-                                <p>Server ID: ${server.id}</p>
-                                <button onclick="manageServer('${server.id}')">Manage</button>
-                            </div>
-                        `;
-              serverListDiv.appendChild(serverDiv);
+                const serverDiv = document.createElement("div");
+                serverDiv.className = "server-item";
+                serverDiv.innerHTML = `
+                              <img class="server-avatar" src="${avatarData.avatar}" alt="${server.name} Avatar" />
+                              <div>
+                                  <h3>Server: ${server.name}</h3>
+                                  <p>Server ID: ${server.id}</p>
+                                  <button onclick="manageServer('${server.id}')">Manage</button>
+                              </div>
+                          `;
+                serverListDiv.appendChild(serverDiv);
+              }
             }
           }
         } catch (error) {
