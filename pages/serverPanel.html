@@ -151,6 +151,16 @@
           console.error("Error fetching server channels:", error);
         }
 
+        // Fetch and populate server roles
+        try {
+          const roles = await fetchServerRoles(serverId); // Ensure this function is defined
+          if (roles) {
+            populateRoleSelectOptions(roles); // Populate roles using a new function
+          }
+        } catch (error) {
+          console.error("Error fetching server roles:", error);
+        }
+
         // Add event listener for save buttons for each setting
         addSaveListeners(serverId);
       });
@@ -173,6 +183,17 @@
         return data;
       }
 
+      // Function to fetch roles
+      async function fetchServerRoles(serverId) {
+        const response = await fetch(`/api/server/${serverId}/roles`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch roles");
+        }
+        const data = await response.json();
+        console.log("Fetched Roles:", data); // Log fetched data to inspect
+        return data.roles; // Return only roles
+      }
+
       // Function to populate all channel and role select elements
       function populateSelectOptions(data) {
         const welcomeChannelSelect = document.getElementById("welcomeChannelSelect");
@@ -187,7 +208,6 @@
 
         const textChannels = data.textChannels || [];
         const voiceChannels = data.voiceChannels || []; // Fetch voice channels from data
-        const roles = data.roles || []; // Assuming roles are fetched as well
 
         // Clear existing options for text channel select elements
         const textSelects = [
@@ -218,14 +238,21 @@
           option.text = channel.name;
           voiceChannelCreatorSelect.appendChild(option);
         });
+      }
 
-        // Populate roles
-        [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect].forEach((select) => {
-          select.innerHTML = "";
+      // Function to populate role select elements
+      function populateRoleSelectOptions(roles) {
+        const partnershipRoleSelect = document.getElementById("partnershipRoleSelect");
+        const partnerPingRoleSelect = document.getElementById("partnerPingRoleSelect");
+        const partnerRoleSelect = document.getElementById("partnerRoleSelect");
+        const muteRoleSelect = document.getElementById("muteRoleSelect");
+
+        [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect, partnerRoleSelect].forEach((select) => {
+          select.innerHTML = ""; // Clear existing options
           roles.forEach((role) => {
             const option = document.createElement("option");
-            option.value = role.id;
-            option.text = role.name;
+            option.value = role.id; // Ensure this matches your API response
+            option.text = role.name; // Ensure this matches your API response
             select.appendChild(option);
           });
         });
@@ -248,8 +275,6 @@
         document.getElementById("saveVoiceChannelCreatorBtn").addEventListener("click", () => saveSetting(serverId, "voiceChannelCreator"));
 
         // New Listeners for additional settings
-        document.getElementById("saveLogsChannelBtn").addEventListener("click", () => saveSetting(serverId, "logsChannel"));
-        document.getElementById("savePartnerChannelBtn").addEventListener("click", () => saveSetting(serverId, "partnerChannel"));
         document.getElementById("savePartnershipRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnershipRole"));
         document.getElementById("savePartnerPingRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnerPingRole"));
         document.getElementById("saveMuteRoleBtn").addEventListener("click", () => saveSetting(serverId, "muteRole"));
