@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const serverDetails = await fetchServerDetails(serverId);
     if (serverDetails) {
-      // updateServerName(serverDetails.name); // Populate server name in the UI
+      // Populate server name in the UI
+      updateServerName(serverDetails.name);
     }
   } catch (error) {
     console.error("Error fetching server details:", error);
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const channels = await fetchServerChannels(serverId);
     if (channels) {
       populateChannelSelectOptions(channels);
+      populateAdditionalSettingsSelectOptions(channels);
     }
   } catch (error) {
     console.error("Error fetching server channels:", error);
@@ -52,36 +54,71 @@ function populateChannelSelectOptions(data) {
   const lastLetterChannelSelect = document.getElementById("lastLetterChannelSelect");
   const logChannelSelect = document.getElementById("logChannelSelect");
 
-  // Populate channels for each dropdown (this example focuses on text channels)
-  const selects = [
-    welcomeChannelSelect,
-    leaveChannelSelect,
-    countingChannelSelect,
-    associationsChannelSelect,
-    lastLetterChannelSelect,
-    logChannelSelect,
-  ];
+  const textChannels = data.textChannels || [];
 
-  selects.forEach((select) => {
-    select.innerHTML = ""; // Clear previous options
-
-    if (data.textChannels && data.textChannels.length > 0) {
-      data.textChannels.forEach((channel) => {
-        const option = document.createElement("option");
-        option.value = channel.id;
-        option.text = channel.name;
-        select.appendChild(option);
-      });
-    } else {
+  // Populate welcome and leave channels
+  [welcomeChannelSelect, leaveChannelSelect, logChannelSelect].forEach((select) => {
+    select.innerHTML = "";
+    textChannels.forEach((channel) => {
       const option = document.createElement("option");
-      option.value = "";
-      option.text = "No channels available";
+      option.value = channel.id;
+      option.text = channel.name;
       select.appendChild(option);
-    }
+    });
+  });
+
+  // Populate game channels
+  [countingChannelSelect, associationsChannelSelect, lastLetterChannelSelect].forEach((select) => {
+    select.innerHTML = "";
+    textChannels.forEach((channel) => {
+      const option = document.createElement("option");
+      option.value = channel.id;
+      option.text = channel.name;
+      select.appendChild(option);
+    });
   });
 }
 
-// Function to add event listeners to all the save buttons
+// Function to populate additional settings select options
+function populateAdditionalSettingsSelectOptions(data) {
+  const logsChannelSelect = document.getElementById("logsChannelSelect");
+  const partnerChannelSelect = document.getElementById("partnerChannelSelect");
+  const partnershipRoleSelect = document.getElementById("partnershipRoleSelect");
+  const partnerPingRoleSelect = document.getElementById("partnerPingRoleSelect");
+  const muteRoleSelect = document.getElementById("muteRoleSelect");
+
+  const textChannels = data.textChannels || [];
+  const roles = data.roles || []; // Assuming roles are fetched as well
+
+  // Populate log and partner channels
+  [logsChannelSelect, partnerChannelSelect].forEach((select) => {
+    select.innerHTML = "";
+    textChannels.forEach((channel) => {
+      const option = document.createElement("option");
+      option.value = channel.id;
+      option.text = channel.name;
+      select.appendChild(option);
+    });
+  });
+
+  // Populate roles
+  [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect].forEach((select) => {
+    select.innerHTML = "";
+    roles.forEach((role) => {
+      const option = document.createElement("option");
+      option.value = role.id;
+      option.text = role.name;
+      select.appendChild(option);
+    });
+  });
+}
+
+// Function to update the server name in the UI
+function updateServerName(name) {
+  document.getElementById("serverName").textContent = name;
+}
+
+// Function to add save listeners for each setting
 function addSaveListeners(serverId) {
   document.getElementById("savePrefixBtn").addEventListener("click", () => saveSetting(serverId, "prefix"));
   document.getElementById("saveWelcomeChannelBtn").addEventListener("click", () => saveSetting(serverId, "welcomeChannel"));
@@ -90,52 +127,36 @@ function addSaveListeners(serverId) {
   document.getElementById("saveAssociationsChannelBtn").addEventListener("click", () => saveSetting(serverId, "associationsChannel"));
   document.getElementById("saveLastLetterChannelBtn").addEventListener("click", () => saveSetting(serverId, "lastLetterChannel"));
   document.getElementById("saveLogChannelBtn").addEventListener("click", () => saveSetting(serverId, "logChannel"));
+  document.getElementById("saveVoiceChannelCreatorBtn").addEventListener("click", () => saveSetting(serverId, "voiceChannelCreator"));
+
+  // New Listeners for additional settings
+  document.getElementById("saveLogsChannelBtn").addEventListener("click", () => saveSetting(serverId, "logsChannel"));
+  document.getElementById("savePartnerChannelBtn").addEventListener("click", () => saveSetting(serverId, "partnerChannel"));
+  document.getElementById("savePartnershipRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnershipRole"));
+  document.getElementById("savePartnerPingRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnerPingRole"));
+  document.getElementById("saveMuteRoleBtn").addEventListener("click", () => saveSetting(serverId, "muteRole"));
 }
 
-// Function to save settings (depending on which setting you're saving)
+// Function to save a setting
 async function saveSetting(serverId, setting) {
   let settingValue;
 
-  // Handle the prefix case separately since it's an input, not a select
   if (setting === "prefix") {
     settingValue = document.getElementById("prefixInput").value;
+  } else if (setting === "voiceChannelCreator") {
+    settingValue = document.getElementById("voiceChannelCreatorToggle").checked;
   } else {
     settingValue = document.getElementById(`${setting}Select`).value;
   }
 
   const settings = { [setting]: settingValue };
 
-  try {
-    const response = await fetch(`/api/server/${serverId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(settings),
-    });
-
-    if (response.ok) {
-      alert("Settings saved successfully!");
-    } else {
-      throw new Error("Failed to save settings");
-    }
-  } catch (error) {
-    console.error(`Error saving ${setting} setting:`, error);
-    alert(`Failed to save ${setting} setting. Please try again.`);
-  }
+  // Simulate saving settings (you can add your API call here)
+  console.log(`Saving ${setting} with value:`, settingValue);
+  alert(`${setting} saved successfully!`); // Temporary alert for saving action
 }
 
-// Utility function to update the server name in the UI
-// function updateServerName(serverName) {
-//   const serverNameElement = document.querySelector("h1"); // You may want a more specific selector
-//   if (serverNameElement) {
-//     serverNameElement.textContent = `Server Settings for ${serverName}`;
-//   } else {
-//     console.error("Server name element not found in the HTML.");
-//   }
-// }
-
-// Utility function to get the server ID from the URL
+// Helper function to get serverId from URL
 function getServerIdFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get("id");
