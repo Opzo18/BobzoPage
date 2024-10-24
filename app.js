@@ -241,6 +241,21 @@ app.get("/api/server/:serverId/channels", async (req, res) => {
   }
 });
 
+app.get("/api/server/:serverId/roles", async (req, res) => {
+  const serverId = req.params.serverId;
+
+  try {
+    const roles = await client.getServerRoles(serverId);
+
+    res.json({
+      roles,
+    });
+  } catch (error) {
+    console.error("Error fetching server roles:", error);
+    res.status(500).json({ error: "Failed to fetch server roles" });
+  }
+});
+
 // API route for bot stats
 app.get("/api/bot-stats", async (req, res) => {
   try {

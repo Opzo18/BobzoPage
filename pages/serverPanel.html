@@ -145,8 +145,7 @@
         try {
           const channels = await fetchServerChannels(serverId);
           if (channels) {
-            populateChannelSelectOptions(channels);
-            populateAdditionalSettingsSelectOptions(channels);
+            populateSelectOptions(channels); // Use the new unified function
           }
         } catch (error) {
           console.error("Error fetching server channels:", error);
@@ -174,53 +173,34 @@
         return data;
       }
 
-      // Function to populate the channel select elements
-      function populateChannelSelectOptions(data) {
+      // Function to populate all channel and role select elements
+      function populateSelectOptions(data) {
         const welcomeChannelSelect = document.getElementById("welcomeChannelSelect");
         const leaveChannelSelect = document.getElementById("leaveChannelSelect");
         const countingChannelSelect = document.getElementById("countingChannelSelect");
         const associationsChannelSelect = document.getElementById("associationsChannelSelect");
         const lastLetterChannelSelect = document.getElementById("lastLetterChannelSelect");
         const logChannelSelect = document.getElementById("logChannelSelect");
-
-        const textChannels = data.textChannels || [];
-
-        // Populate welcome and leave channels
-        [welcomeChannelSelect, leaveChannelSelect, logChannelSelect].forEach((select) => {
-          select.innerHTML = "";
-          textChannels.forEach((channel) => {
-            const option = document.createElement("option");
-            option.value = channel.id;
-            option.text = channel.name;
-            select.appendChild(option);
-          });
-        });
-
-        // Populate game channels
-        [countingChannelSelect, associationsChannelSelect, lastLetterChannelSelect].forEach((select) => {
-          select.innerHTML = "";
-          textChannels.forEach((channel) => {
-            const option = document.createElement("option");
-            option.value = channel.id;
-            option.text = channel.name;
-            select.appendChild(option);
-          });
-        });
-      }
-
-      // Function to populate additional settings select options
-      function populateAdditionalSettingsSelectOptions(data) {
-        const logsChannelSelect = document.getElementById("logsChannelSelect");
         const partnerChannelSelect = document.getElementById("partnerChannelSelect");
-        const partnershipRoleSelect = document.getElementById("partnershipRoleSelect");
-        const partnerPingRoleSelect = document.getElementById("partnerPingRoleSelect");
-        const muteRoleSelect = document.getElementById("muteRoleSelect");
+
+        const voiceChannelCreatorSelect = document.getElementById("voiceChannelCreatorSelect");
 
         const textChannels = data.textChannels || [];
+        const voiceChannels = data.voiceChannels || []; // Fetch voice channels from data
         const roles = data.roles || []; // Assuming roles are fetched as well
 
-        // Populate log and partner channels
-        [logsChannelSelect, partnerChannelSelect].forEach((select) => {
+        // Clear existing options for text channel select elements
+        const textSelects = [
+          welcomeChannelSelect,
+          leaveChannelSelect,
+          countingChannelSelect,
+          associationsChannelSelect,
+          lastLetterChannelSelect,
+          logChannelSelect,
+          partnerChannelSelect,
+        ];
+
+        textSelects.forEach((select) => {
           select.innerHTML = "";
           textChannels.forEach((channel) => {
             const option = document.createElement("option");
@@ -228,6 +208,15 @@
             option.text = channel.name;
             select.appendChild(option);
           });
+        });
+
+        // Populate voice channels for the voice channel creator
+        voiceChannelCreatorSelect.innerHTML = ""; // Clear existing options
+        voiceChannels.forEach((channel) => {
+          const option = document.createElement("option");
+          option.value = channel.id;
+          option.text = channel.name;
+          voiceChannelCreatorSelect.appendChild(option);
         });
 
         // Populate roles
