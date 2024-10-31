@@ -12,6 +12,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error fetching server details:", error);
   }
 
+  // Fetch and populate server prefixes
+  try {
+    const serverSettings = await fetchServerDetails(serverId);
+    const prefix = serverSettings?.prefix || config.prefix;
+    if (prefix) {
+      const prefixInput = document.getElementById("prefixInput");
+      prefixInput.value = prefix;
+    }
+  } catch (error) {
+    console.error("Error fetching server prefixes:", error);
+  }
+
   // Fetch and populate server channels
   try {
     const channels = await fetchServerChannels(serverId);
@@ -24,9 +36,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Fetch and populate server roles
   try {
-    const roles = await fetchServerRoles(serverId); // Ensure this function is defined
+    const roles = await fetchServerRoles(serverId);
     if (roles) {
-      populateRoleSelectOptions(roles); // Populate roles using a new function
+      populateRoleSelectOptions(roles);
     }
   } catch (error) {
     console.error("Error fetching server roles:", error);
@@ -62,7 +74,7 @@ async function fetchServerRoles(serverId) {
   }
   const data = await response.json();
   console.log("Fetched Roles:", data); // Log fetched data to inspect
-  return data.roles; // Return only roles
+  return data.roles;
 }
 
 // Function to populate all channel and role select elements
@@ -78,7 +90,7 @@ function populateSelectOptions(data) {
   const voiceChannelCreatorSelect = document.getElementById("voiceChannelCreatorSelect");
 
   const textChannels = data.textChannels || [];
-  const voiceChannels = data.voiceChannels || []; // Fetch voice channels from data
+  const voiceChannels = data.voiceChannels || [];
 
   // Clear existing options for text channel select elements
   const textSelects = [
@@ -102,7 +114,7 @@ function populateSelectOptions(data) {
   });
 
   // Populate voice channels for the voice channel creator
-  voiceChannelCreatorSelect.innerHTML = ""; // Clear existing options
+  voiceChannelCreatorSelect.innerHTML = "";
   voiceChannels.forEach((channel) => {
     const option = document.createElement("option");
     option.value = channel.id;
@@ -119,11 +131,11 @@ function populateRoleSelectOptions(roles) {
   const muteRoleSelect = document.getElementById("muteRoleSelect");
 
   [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect, partnerRoleSelect].forEach((select) => {
-    select.innerHTML = ""; // Clear existing options
+    select.innerHTML = "";
     roles.forEach((role) => {
       const option = document.createElement("option");
-      option.value = role.id; 
-      option.text = role.name; 
+      option.value = role.id;
+      option.text = role.name;
       select.appendChild(option);
     });
   });
@@ -157,6 +169,10 @@ async function saveSetting(serverId, setting) {
 
   if (setting === "prefix") {
     settingValue = document.getElementById("prefixInput").value;
+    if (!settingValue) {
+      alert("Prefix cannot be empty!");
+      return;
+    }
   } else if (setting === "voiceChannelCreator") {
     settingValue = document.getElementById("voiceChannelCreatorSelect").value;
   } else {
@@ -167,7 +183,7 @@ async function saveSetting(serverId, setting) {
 
   // Simulate saving settings (you can add your API call here)
   console.log(`Saving ${setting} with value:`, settingValue);
-  alert(`${setting} saved successfully!`); // Temporary alert for saving action
+  alert(`${setting} saved successfully!`);
 }
 
 // Helper function to get serverId from URL
