@@ -7,48 +7,33 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (serverDetails) {
       // Populate server name in the UI
       updateServerName(serverDetails.name);
-    }
-  } catch (error) {
-    console.error("Error fetching server details:", error);
-  }
+      updateServerAvatar(serverId);
 
-  // Fetch and populate server prefixes
-  try {
-    const serverSettings = await fetchServerDetails(serverId);
-    const prefix = serverSettings?.prefix || config.prefix;
-    if (prefix) {
+      // Fetch and populate server prefixes
       const prefixInput = document.getElementById("prefixInput");
-      prefixInput.value = prefix;
-    }
-  } catch (error) {
-    console.error("Error fetching server prefixes:", error);
-  }
+      prefixInput.value = serverDetails?.prefix || config.prefix;
 
-  // Fetch and populate server channels
-  try {
-    const channels = await fetchServerChannels(serverId);
-    if (channels) {
-      populateSelectOptions(channels);
-    }
-  } catch (error) {
-    console.error("Error fetching server channels:", error);
-  }
+      // Fetch and populate server channels with default channels
+      const channels = await fetchServerChannels(serverId);
+      if (channels) {
+        populateSelectOptions(channels, serverDetails);
+      }
 
-  // Fetch and populate server roles
-  try {
-    const roles = await fetchServerRoles(serverId);
-    if (roles) {
-      populateRoleSelectOptions(roles);
+      // Fetch and populate server roles
+      const roles = await fetchServerRoles(serverId);
+      if (roles) {
+        populateRoleSelectOptions(roles);
+      }
     }
   } catch (error) {
-    console.error("Error fetching server roles:", error);
+    console.error("Error initializing server settings:", error);
   }
 
   // Add event listener for save buttons for each setting
   addSaveListeners(serverId);
 });
 
-// Function to fetch server details (e.g., server name)
+// Function to fetch server details
 async function fetchServerDetails(serverId) {
   const response = await fetch(`/api/server/${serverId}`);
   const data = await response.json();
@@ -62,7 +47,6 @@ async function fetchServerChannels(serverId) {
     throw new Error("Failed to fetch channels");
   }
   const data = await response.json();
-  console.log("Fetched Channels:", data); // Log fetched data to inspect
   return data;
 }
 
@@ -73,12 +57,11 @@ async function fetchServerRoles(serverId) {
     throw new Error("Failed to fetch roles");
   }
   const data = await response.json();
-  console.log("Fetched Roles:", data); // Log fetched data to inspect
   return data.roles;
 }
 
 // Function to populate all channel and role select elements
-function populateSelectOptions(data) {
+function populateSelectOptions(data, serverDetails) {
   const welcomeChannelSelect = document.getElementById("welcomeChannelSelect");
   const leaveChannelSelect = document.getElementById("leaveChannelSelect");
   const countingChannelSelect = document.getElementById("countingChannelSelect");
@@ -86,29 +69,33 @@ function populateSelectOptions(data) {
   const lastLetterChannelSelect = document.getElementById("lastLetterChannelSelect");
   const logChannelSelect = document.getElementById("logChannelSelect");
   const partnerChannelSelect = document.getElementById("partnerChannelSelect");
-
   const voiceChannelCreatorSelect = document.getElementById("voiceChannelCreatorSelect");
 
   const textChannels = data.textChannels || [];
   const voiceChannels = data.voiceChannels || [];
 
-  // Clear existing options for text channel select elements
   const textSelects = [
-    welcomeChannelSelect,
-    leaveChannelSelect,
-    countingChannelSelect,
-    associationsChannelSelect,
-    lastLetterChannelSelect,
-    logChannelSelect,
-    partnerChannelSelect,
+    { select: welcomeChannelSelect, defaultChannelId: serverDetails.welcomeChannel },
+    { select: leaveChannelSelect, defaultChannelId: serverDetails.leaveChannel },
+    { select: countingChannelSelect, defaultChannelId: serverDetails.countingChannel },
+    { select: associationsChannelSelect, defaultChannelId: serverDetails.associationsChannel },
+    { select: lastLetterChannelSelect, defaultChannelId: serverDetails.lastLetterChannel },
+    { select: logChannelSelect, defaultChannelId: serverDetails.logsChannel },
+    { select: partnerChannelSelect, defaultChannelId: serverDetails.partnerChannel },
   ];
 
-  textSelects.forEach((select) => {
+  textSelects.forEach(({ select, defaultChannelId }) => {
     select.innerHTML = "";
     textChannels.forEach((channel) => {
       const option = document.createElement("option");
       option.value = channel.id;
       option.text = channel.name;
+
+      // Set the default option if it matches the saved channel ID
+      if (channel.id === defaultChannelId) {
+        option.selected = true;
+      }
+
       select.appendChild(option);
     });
   });
@@ -119,6 +106,12 @@ function populateSelectOptions(data) {
     const option = document.createElement("option");
     option.value = channel.id;
     option.text = channel.name;
+
+    // Set default option for the voice channel creator if it matches
+    if (channel.id === serverDetails.voiceChannelCreator) {
+      option.selected = true;
+    }
+
     voiceChannelCreatorSelect.appendChild(option);
   });
 }
@@ -144,6 +137,18 @@ function populateRoleSelectOptions(roles) {
 // Function to update the server name in the UI
 function updateServerName(name) {
   document.getElementById("serverName").textContent = name;
+}
+
+// Update server avatar
+async function updateServerAvatar(serverId) {
+  const serverAvatar = document.getElementById("serverAvatar");
+  try {
+    const avatarResponse = await fetch(`/api/server/${serverId}/avatar`);
+    const avatarData = await avatarResponse.json();
+    serverAvatar.src = avatarData.avatar;
+  } catch (error) {
+    console.error("Error updating server avatar:", error);
+  }
 }
 
 // Function to add save listeners for each setting
