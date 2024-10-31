@@ -5,13 +5,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const serverDetails = await fetchServerDetails(serverId);
     if (serverDetails) {
-      // Populate server name in the UI
+      // Populate server
       updateServerName(serverDetails.name);
       updateServerAvatar(serverId);
-
-      // Fetch and populate server prefixes
-      const prefixInput = document.getElementById("prefixInput");
-      prefixInput.value = serverDetails?.prefix || config.prefix;
+      updateServerPrefix(serverId);
 
       // Fetch and populate server channels with default channels
       const channels = await fetchServerChannels(serverId);
@@ -35,9 +32,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Function to fetch server details
 async function fetchServerDetails(serverId) {
-  const response = await fetch(`/api/server/${serverId}`);
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`/api/server/${serverId}`);
+    if (!response.ok) throw new Error(`Error: ${response.status}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch server details:", error);
+    return { error: "Failed to fetch server details" };
+  }
 }
 
 // Function to fetch channels
@@ -134,7 +137,7 @@ function populateRoleSelectOptions(roles) {
   });
 }
 
-// Function to update the server name in the UI
+// Function to update the server name
 function updateServerName(name) {
   document.getElementById("serverName").textContent = name;
 }
@@ -148,6 +151,18 @@ async function updateServerAvatar(serverId) {
     serverAvatar.src = avatarData.avatar;
   } catch (error) {
     console.error("Error updating server avatar:", error);
+  }
+}
+
+// Update server prefix
+async function updateServerPrefix(serverId) {
+  const serverPrefix = document.getElementById("prefixInput");
+  try {
+    const prefixResponse = await fetch(`/api/server/${serverId}/prefix`);
+    const prefixData = await prefixResponse.json();
+    serverPrefix.value = prefixData.prefix;
+  } catch (error) {
+    console.error("Error updating server prefix:", error);
   }
 }
 

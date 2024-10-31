@@ -224,6 +224,26 @@ app.get("/api/server/:serverId/avatar", async (req, res) => {
   }
 });
 
+// API route to get server prefix
+app.get("/api/server/:serverId/prefix", async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: "Unauthorized" });
+
+  const { serverId } = req.params;
+  try {
+    const serverDetails = await client.getServerSettings(serverId, req.session.user.id);
+
+    if (!serverDetails || serverDetails.error) {
+      return res.status(404).json({ error: "Server not found" });
+    }
+
+    res.json({ prefix: serverDetails.prefix });
+  } catch (error) {
+    console.error(`Error fetching prefix for server ${serverId}:`, error);
+    res.status(500).json({ error: "Failed to fetch server prefix" });
+  }
+});
+
+// API route to get server channels
 app.get("/api/server/:serverId/channels", async (req, res) => {
   const serverId = req.params.serverId;
 
@@ -241,6 +261,7 @@ app.get("/api/server/:serverId/channels", async (req, res) => {
   }
 });
 
+// API route to get server roles
 app.get("/api/server/:serverId/roles", async (req, res) => {
   const serverId = req.params.serverId;
 
