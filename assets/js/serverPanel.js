@@ -16,11 +16,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const channels = await fetchServerChannels(serverId);
     if (channels) {
-      populateChannelSelectOptions(channels);
-      populateAdditionalSettingsSelectOptions(channels);
+      populateSelectOptions(channels);
     }
   } catch (error) {
     console.error("Error fetching server channels:", error);
+  }
+
+  // Fetch and populate server roles
+  try {
+    const roles = await fetchServerRoles(serverId); // Ensure this function is defined
+    if (roles) {
+      populateRoleSelectOptions(roles); // Populate roles using a new function
+    }
+  } catch (error) {
+    console.error("Error fetching server roles:", error);
   }
 
   // Add event listener for save buttons for each setting
@@ -45,19 +54,44 @@ async function fetchServerChannels(serverId) {
   return data;
 }
 
-// Function to populate the channel select elements
-function populateChannelSelectOptions(data) {
+// Function to fetch roles
+async function fetchServerRoles(serverId) {
+  const response = await fetch(`/api/server/${serverId}/roles`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch roles");
+  }
+  const data = await response.json();
+  console.log("Fetched Roles:", data); // Log fetched data to inspect
+  return data.roles; // Return only roles
+}
+
+// Function to populate all channel and role select elements
+function populateSelectOptions(data) {
   const welcomeChannelSelect = document.getElementById("welcomeChannelSelect");
   const leaveChannelSelect = document.getElementById("leaveChannelSelect");
   const countingChannelSelect = document.getElementById("countingChannelSelect");
   const associationsChannelSelect = document.getElementById("associationsChannelSelect");
   const lastLetterChannelSelect = document.getElementById("lastLetterChannelSelect");
   const logChannelSelect = document.getElementById("logChannelSelect");
+  const partnerChannelSelect = document.getElementById("partnerChannelSelect");
+
+  const voiceChannelCreatorSelect = document.getElementById("voiceChannelCreatorSelect");
 
   const textChannels = data.textChannels || [];
+  const voiceChannels = data.voiceChannels || []; // Fetch voice channels from data
 
-  // Populate welcome and leave channels
-  [welcomeChannelSelect, leaveChannelSelect, logChannelSelect].forEach((select) => {
+  // Clear existing options for text channel select elements
+  const textSelects = [
+    welcomeChannelSelect,
+    leaveChannelSelect,
+    countingChannelSelect,
+    associationsChannelSelect,
+    lastLetterChannelSelect,
+    logChannelSelect,
+    partnerChannelSelect,
+  ];
+
+  textSelects.forEach((select) => {
     select.innerHTML = "";
     textChannels.forEach((channel) => {
       const option = document.createElement("option");
@@ -67,47 +101,29 @@ function populateChannelSelectOptions(data) {
     });
   });
 
-  // Populate game channels
-  [countingChannelSelect, associationsChannelSelect, lastLetterChannelSelect].forEach((select) => {
-    select.innerHTML = "";
-    textChannels.forEach((channel) => {
-      const option = document.createElement("option");
-      option.value = channel.id;
-      option.text = channel.name;
-      select.appendChild(option);
-    });
+  // Populate voice channels for the voice channel creator
+  voiceChannelCreatorSelect.innerHTML = ""; // Clear existing options
+  voiceChannels.forEach((channel) => {
+    const option = document.createElement("option");
+    option.value = channel.id;
+    option.text = channel.name;
+    voiceChannelCreatorSelect.appendChild(option);
   });
 }
 
-// Function to populate additional settings select options
-function populateAdditionalSettingsSelectOptions(data) {
-  const logsChannelSelect = document.getElementById("logsChannelSelect");
-  const partnerChannelSelect = document.getElementById("partnerChannelSelect");
+// Function to populate role select elements
+function populateRoleSelectOptions(roles) {
   const partnershipRoleSelect = document.getElementById("partnershipRoleSelect");
   const partnerPingRoleSelect = document.getElementById("partnerPingRoleSelect");
+  const partnerRoleSelect = document.getElementById("partnerRoleSelect");
   const muteRoleSelect = document.getElementById("muteRoleSelect");
 
-  const textChannels = data.textChannels || [];
-  const roles = data.roles || []; // Assuming roles are fetched as well
-
-  // Populate log and partner channels
-  [logsChannelSelect, partnerChannelSelect].forEach((select) => {
-    select.innerHTML = "";
-    textChannels.forEach((channel) => {
-      const option = document.createElement("option");
-      option.value = channel.id;
-      option.text = channel.name;
-      select.appendChild(option);
-    });
-  });
-
-  // Populate roles
-  [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect].forEach((select) => {
-    select.innerHTML = "";
+  [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect, partnerRoleSelect].forEach((select) => {
+    select.innerHTML = ""; // Clear existing options
     roles.forEach((role) => {
       const option = document.createElement("option");
-      option.value = role.id;
-      option.text = role.name;
+      option.value = role.id; 
+      option.text = role.name; 
       select.appendChild(option);
     });
   });
@@ -130,8 +146,6 @@ function addSaveListeners(serverId) {
   document.getElementById("saveVoiceChannelCreatorBtn").addEventListener("click", () => saveSetting(serverId, "voiceChannelCreator"));
 
   // New Listeners for additional settings
-  document.getElementById("saveLogsChannelBtn").addEventListener("click", () => saveSetting(serverId, "logsChannel"));
-  document.getElementById("savePartnerChannelBtn").addEventListener("click", () => saveSetting(serverId, "partnerChannel"));
   document.getElementById("savePartnershipRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnershipRole"));
   document.getElementById("savePartnerPingRoleBtn").addEventListener("click", () => saveSetting(serverId, "partnerPingRole"));
   document.getElementById("saveMuteRoleBtn").addEventListener("click", () => saveSetting(serverId, "muteRole"));
@@ -144,7 +158,7 @@ async function saveSetting(serverId, setting) {
   if (setting === "prefix") {
     settingValue = document.getElementById("prefixInput").value;
   } else if (setting === "voiceChannelCreator") {
-    settingValue = document.getElementById("voiceChannelCreatorToggle").checked;
+    settingValue = document.getElementById("voiceChannelCreatorSelect").value;
   } else {
     settingValue = document.getElementById(`${setting}Select`).value;
   }
