@@ -48,6 +48,14 @@ app.get("/login", (req, res) => {
   res.redirect(discordAuthUrl);
 });
 
+// Discord BotInvite login route
+app.get("/botInvite", (req, res) => {
+  const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${config.clientID}&permissions=8&scope=applications.commands+bot`;
+
+  https: console.log("Providing login URL:", discordAuthUrl);
+  res.redirect(discordAuthUrl);
+});
+
 // Check login status
 app.get("/api/check-login", (req, res) => {
   res.json({ loggedIn: !!req.session.user });

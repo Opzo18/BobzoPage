@@ -6,6 +6,16 @@
     <title>Bobzo - Dashboard</title>
     <link rel="stylesheet" href="../assets/css/style.css" />
     <link rel="shortcut icon" href="../assets/images/logo.png" type="image/x-icon" />
+    <style>
+      #inviteLink {
+        text-decoration: none;
+        color: aqua;
+      }
+
+      #inviteLink:hover {
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <nav>
@@ -59,7 +69,8 @@
           serverListDiv.innerHTML = "";
           if (servers.length === 0) {
             // Display message if no servers are found
-            serverListDiv.innerHTML = "<p>No servers found.</p>";
+            serverListDiv.innerHTML =
+              '<p>No servers found where you\'re admin. <a href="/botInvite" target="_blank" id="inviteLink">Invite bot</a></p>';
           } else {
             for (const server of servers) {
               if (server.name && server.id) {
