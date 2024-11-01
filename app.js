@@ -244,7 +244,7 @@ app.get("/api/server/:serverId/prefix", async (req, res) => {
       return res.status(404).json({ error: "Server not found" });
     }
 
-    res.json({ prefix: serverDetails.prefix });
+    res.json({ prefix: serverDetails?.prefix || config.prefix });
   } catch (error) {
     console.error(`Error fetching prefix for server ${serverId}:`, error);
     res.status(500).json({ error: "Failed to fetch server prefix" });
