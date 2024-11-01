@@ -16,10 +16,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         populateSelectOptions(channels, serverDetails);
       }
 
-      // Fetch and populate server roles
+      // Fetch and populate server roles with default roles
       const roles = await fetchServerRoles(serverId);
       if (roles) {
-        populateRoleSelectOptions(roles);
+        populateRoleSelectOptions(roles, serverDetails);
       }
     }
   } catch (error) {
@@ -119,19 +119,34 @@ function populateSelectOptions(data, serverDetails) {
   });
 }
 
-// Function to populate role select elements
-function populateRoleSelectOptions(roles) {
+// Function to populate role select elements with default roles
+function populateRoleSelectOptions(roles, serverDetails) {
   const partnershipRoleSelect = document.getElementById("partnershipRoleSelect");
   const partnerPingRoleSelect = document.getElementById("partnerPingRoleSelect");
   const partnerRoleSelect = document.getElementById("partnerRoleSelect");
   const muteRoleSelect = document.getElementById("muteRoleSelect");
 
-  [partnershipRoleSelect, partnerPingRoleSelect, muteRoleSelect, partnerRoleSelect].forEach((select) => {
-    select.innerHTML = "";
+  // Define roles with their corresponding saved values from serverDetails
+  const roleSelects = [
+    { select: partnershipRoleSelect, defaultRoleId: serverDetails.partnershipRole },
+    { select: partnerPingRoleSelect, defaultRoleId: serverDetails.partnerPingRole },
+    { select: partnerRoleSelect, defaultRoleId: serverDetails.partnerRole },
+    { select: muteRoleSelect, defaultRoleId: serverDetails.muteRole },
+  ];
+
+  // Loop through each select and populate options
+  roleSelects.forEach(({ select, defaultRoleId }) => {
+    select.innerHTML = ""; // Clear current options
     roles.forEach((role) => {
       const option = document.createElement("option");
       option.value = role.id;
       option.text = role.name;
+
+      // Set as default option if it matches the saved role ID
+      if (role.id === defaultRoleId) {
+        option.selected = true;
+      }
+
       select.appendChild(option);
     });
   });
