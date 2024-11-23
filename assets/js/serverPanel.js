@@ -62,7 +62,7 @@ function populateSelectOptions(data, serverDetails) {
     { select: "associationsChannelSelect", defaultChannelId: serverDetails.associationsChannel },
     { select: "lastLetterChannelSelect", defaultChannelId: serverDetails.lastLetterChannel },
     { select: "logChannelSelect", defaultChannelId: serverDetails.logsChannel },
-    { select: "partnerChannelSelect", defaultChannelId: serverDetails.partnerChannel }
+    { select: "partnerChannelSelect", defaultChannelId: serverDetails.partnerChannel },
   ];
 
   textSelects.forEach(({ select, defaultChannelId }) => {
@@ -94,7 +94,7 @@ function populateRoleSelectOptions(roles, serverDetails) {
     { select: "partnershipRoleSelect", defaultRoleId: serverDetails.partnershipRole },
     { select: "partnerPingRoleSelect", defaultRoleId: serverDetails.partnerPingRole },
     { select: "partnerRoleSelect", defaultRoleId: serverDetails.partnerRole },
-    { select: "muteRoleSelect", defaultRoleId: serverDetails.muteRole }
+    { select: "muteRoleSelect", defaultRoleId: serverDetails.muteRole },
   ];
 
   roleSelects.forEach(({ select, defaultRoleId }) => {
@@ -158,7 +158,7 @@ async function saveSetting(serverId, setting) {
     const response = await fetch(`/api/server/${serverId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings)
+      body: JSON.stringify(settings),
     });
 
     if (response.ok) {
@@ -176,3 +176,9 @@ async function saveSetting(serverId, setting) {
 function getServerIdFromUrl() {
   return new URLSearchParams(window.location.search).get("id");
 }
+
+// Logout
+document.getElementById("logoutBTN").addEventListener("click", async () => {
+  await fetch("/logout");
+  window.location.href = "/"; // Redirect to homepage after logout
+});
