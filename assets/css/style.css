@@ -359,7 +359,7 @@ footer a {
 #prefix-settings h2,
 #channel-settings h2,
 #game-channels h2,
-#log-channel-settings h2,
+#logs-channel-settings h2,
 #voice-channel-creator-settings h2 {
   color: #a4d65e;
   margin-bottom: 15px;
@@ -368,7 +368,7 @@ footer a {
 #prefix-settings h3,
 #channel-settings h3,
 #game-channels h3,
-#log-channel-settings h3,
+#logs-channel-settings h3,
 #voice-channel-creator-settings h3 {
   color: #ffffff;
   margin: 5px;

@@ -61,7 +61,7 @@ function populateSelectOptions(data, serverDetails) {
     { select: "countingChannelSelect", defaultChannelId: serverDetails.countingChannel },
     { select: "associationsChannelSelect", defaultChannelId: serverDetails.associationsChannel },
     { select: "lastLetterChannelSelect", defaultChannelId: serverDetails.lastLetterChannel },
-    { select: "logChannelSelect", defaultChannelId: serverDetails.logsChannel },
+    { select: "logsChannelSelect", defaultChannelId: serverDetails.logsChannel },
     { select: "partnerChannelSelect", defaultChannelId: serverDetails.partnerChannel },
   ];
 
