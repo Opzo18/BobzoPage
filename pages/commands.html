@@ -34,5 +34,11 @@
     </footer>
 
     <script src="../assets/js/commands.js"></script>
+    <script>
+      document.getElementById("logoutBTN").addEventListener("click", async () => {
+        await fetch("/logout");
+        window.location.href = "/";
+      });
+    </script>
   </body>
 </html>

@@ -1,17 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Load footer and sidebar
-  fetch("../assets/pages/footer.html")
-    .then((response) => response.text())
-    .then((data) => {
-      document.querySelector("footer").innerHTML = data;
-    });
-
-  fetch("../assets/pages/sidebar.html")
-    .then((response) => response.text())
-    .then((data) => {
-      document.querySelector(".sidebar").innerHTML = data;
-    });
-
   // Fetch and display command info
   fetch("/api/commands")
     .then((response) => response.json())
