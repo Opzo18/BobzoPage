@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boboz Chat</title>
+    <link rel="shortcut icon" href="../../assets/images/logo.png" type="image/x-icon" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        padding: 5px;
+        border-bottom: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Write a message..." />
+      <button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (input.value) {
+          socket.emit("chat message", input.value);
+          input.value = "";
+          input.focus();
+        }
+      });
+
+      let historyLoaded = false;
+
+      socket.on("chat history", (history) => {
+        if (historyLoaded) return;
+        historyLoaded = true;
+
+        messages.innerHTML = "";
+
+        history.forEach((msg) => {
+          const item = document.createElement("li");
+          item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+          messages.appendChild(item);
+        });
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </body>
+</html>
