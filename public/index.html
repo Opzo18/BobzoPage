@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobzo - Your Discord Assistant</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+        background-color: #1e1e2e;
+        color: white;
+      }
+      h1 {
+        font-size: 2.5em;
+      }
+      .description {
+        max-width: 600px;
+        margin: 20px auto;
+        font-size: 1.2em;
+      }
+      .features {
+        text-align: left;
+        max-width: 500px;
+        margin: 20px auto;
+      }
+      .feature-item {
+        margin: 10px 0;
+        font-size: 1.1em;
+      }
+      .commands {
+        margin-top: 20px;
+      }
+      .command-category {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 10px 0;
+      }
+      .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        color: white;
+        background-color: #5865f2;
+        text-decoration: none;
+        border-radius: 8px;
+      }
+      .btn:hover {
+        background-color: #4752c4;
+      }
+      #panel-btn {
+        display: none;
+        background-color: #ff9f1c;
+      }
+      #panel-btn:hover {
+        background-color: #e68900;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Welcome to Bobzo</h1>
+
+    <p class="description">
+      Bobzo is your ultimate Discord companion, designed to enhance your server with powerful moderation, engaging interactions, fun activities, and a
+      rewarding economy system. Whether you're managing a thriving community or just hanging out with friends, Bobzo makes everything easier and more
+      entertaining. Customize it to fit your needs and watch your server come to life!
+    </p>
+
+    <div class="features">
+      <p class="feature-item">✅ <strong>Smart Moderation</strong> – Automate bans, warnings, and anti-spam protection effortlessly.</p>
+      <p class="feature-item">✅ <strong>Engaging Interactions</strong> – Unique commands to make your Discord server more interactive.</p>
+      <p class="feature-item">✅ <strong>Fun & Games</strong> – A variety of entertaining commands, including memes, trivia, and more!</p>
+      <p class="feature-item">✅ <strong>Economy System</strong> – Build a virtual economy with custom currencies, shops, and rewards.</p>
+      <p class="feature-item">✅ <strong>Image Generation</strong> – Generate memes, edit images, and more with powerful image tools.</p>
+    </div>
+
+    <div class="commands">
+      <p class="command-category">🛠️ Moderation</p>
+      <p class="command-category">🎭 Interactions</p>
+      <p class="command-category">🎨 Image Commands</p>
+      <p class="command-category">🎉 Fun</p>
+      <p class="command-category">💰 Economy</p>
+    </div>
+
+    <a href="/api/auth/login" class="btn">Login with Discord</a>
+    <a href="/api/panel" class="btn" id="panel-btn" style="display: none">Go to Panel</a>
+    <a href="/api/auth/logout" class="btn" id="logout-btn" style="display: none; background-color: red">Logout</a>
+
+    <script>
+      async function checkLogin() {
+        const response = await fetch("/api/auth/user");
+        const data = await response.json();
+
+        if (data.loggedIn) {
+          document.getElementById("panel-btn").style.display = "inline-block";
+          document.getElementById("logout-btn").style.display = "inline-block";
+        }
+      }
+
+      checkLogin();
+    </script>
+  </body>
+</html>

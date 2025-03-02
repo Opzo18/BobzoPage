@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobzo - Admin Panel</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 50px;
+        background-color: #1e1e2e;
+        color: white;
+      }
+      h1 {
+        font-size: 2.5em;
+      }
+      #servers {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+      .server {
+        background-color: #282a36;
+        padding: 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+        width: 200px;
+      }
+      .server:hover {
+        background-color: #44475a;
+      }
+      .server img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      .server p {
+        margin: 10px 0 0;
+      }
+    </style>
+    <script>
+      async function checkLogin() {
+        try {
+          const response = await fetch("/api/auth/user");
+          const data = await response.json();
+
+          if (!data.loggedIn) {
+            window.location.href = "/api/auth/login";
+          } else {
+            document.getElementById("user-info").innerText = `Logged in as: ${data.user.username}#${data.user.discriminator}`;
+            loadServers();
+          }
+        } catch (error) {
+          console.error("Error checking login:", error);
+          window.location.href = "/api/auth/login";
+        }
+      }
+
+      async function loadServers() {
+        try {
+          const response = await fetch("/api/servers");
+          const servers = await response.json();
+
+          const serversContainer = document.getElementById("servers");
+          serversContainer.innerHTML = "";
+
+          if (servers.length === 0) {
+            serversContainer.innerHTML = "<p>You are not an admin on any servers.</p>";
+            return;
+          }
+
+          servers.forEach((server) => {
+            const serverElement = document.createElement("div");
+            serverElement.className = "server";
+            serverElement.onclick = () => selectServer(server.id);
+
+            const img = document.createElement("img");
+            img.src = server.avatar;
+            img.alt = server.name;
+
+            const name = document.createElement("p");
+            name.innerText = server.name;
+
+            serverElement.appendChild(img);
+            serverElement.appendChild(name);
+            serversContainer.appendChild(serverElement);
+          });
+        } catch (error) {
+          console.error("Error loading servers:", error);
+          document.getElementById("servers").innerHTML = "<p>Error loading servers.</p>";
+        }
+      }
+
+      function selectServer(serverId) {
+        window.location.href = `/api/serverPanel/${serverId}/panel`;
+      }
+
+      window.onload = checkLogin;
+    </script>
+  </head>
+  <body>
+    <h1>Bobzo Admin Panel</h1>
+    <p id="user-info">Checking login status...</p>
+    <div id="servers">
+      <p>Loading servers...</p>
+    </div>
+  </body>
+</html>

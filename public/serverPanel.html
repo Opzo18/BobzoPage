@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobzo - Server Panel</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1e1e2e;
+        color: white;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+      }
+      .navbar {
+        background-color: #282a36;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+      .navbar a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: 0.3s;
+      }
+      .navbar a:hover {
+        background-color: #44475a;
+      }
+      .container {
+        margin-top: 20px;
+        padding: 20px;
+        display: none;
+      }
+      input,
+      select,
+      button {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 5px;
+        border: none;
+      }
+      button {
+        background-color: #6272a4;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #7085b6;
+      }
+    </style>
+    <script>
+      let serverId = window.location.pathname.split("/")[3];
+
+      async function loadOverview() {
+        const response = await fetch(`/api/serverPanel/${serverId}`);
+        const stats = await response.json();
+
+        document.getElementById("overview-name").innerText = stats.name;
+        document.getElementById("overview-id").innerText = "Server ID: " + stats.id;
+        document.getElementById("member-count").innerText = "Members: " + stats.totalUsers;
+        document.getElementById("channel-count").innerText = "Total Channels: " + stats.totalChannels;
+        document.getElementById("role-count").innerText = "Total Roles: " + stats.totalRoles;
+      }
+
+      async function loadSettings() {
+        const response = await fetch(`/api/serverSettings/${serverId}`);
+        const settings = await response.json();
+
+        document.getElementById("prefix").value = settings.prefix;
+        document.getElementById("language").value = settings.language;
+        document.getElementById("welcome-channel").value = settings.welcomeChannel || "";
+        document.getElementById("leave-channel").value = settings.leaveChannel || "";
+        document.getElementById("welcome-message").value = settings.welcomeMessage || "";
+        document.getElementById("leave-message").value = settings.leaveMessage || "";
+        document.getElementById("partner-channel").value = settings.partnerChannel || "";
+        document.getElementById("partner-role").value = settings.partnerRole || "";
+      }
+
+      async function updateSettings(field, value) {
+        await fetch(`/api/serverSettings/${serverId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ [field]: value }),
+        });
+        alert("Settings updated!");
+      }
+
+      function showSection(section) {
+        document.querySelectorAll(".container").forEach((div) => (div.style.display = "none"));
+        document.getElementById(section).style.display = "block";
+      }
+
+      window.onload = async function () {
+        await loadOverview();
+        await loadSettings();
+        showSection("overview");
+      };
+    </script>
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="#" onclick="showSection('overview')">Overview</a>
+      <a href="#" onclick="showSection('general')">General</a>
+      <a href="#" onclick="showSection('welcome-leave')">Welcome & Leave</a>
+      <a href="#" onclick="showSection('partnerships')">Partnerships</a>
+    </div>
+
+    <div id="overview" class="container">
+      <h2>Server Overview</h2>
+      <p id="overview-name">Loading...</p>
+      <p id="overview-id"></p>
+      <p id="member-count"></p>
+      <p id="channel-count"></p>
+      <p id="role-count"></p>
+    </div>
+
+    <div id="general" class="container">
+      <h2>General Settings</h2>
+      <label>Prefix:</label>
+      <input type="text" id="prefix" onchange="updateSettings('prefix', this.value)" />
+      <br />
+      <label>Language:</label>
+      <select id="language" onchange="updateSettings('language', this.value)">
+        <option value="en">English</option>
+        <option value="pl">Polski</option>
+      </select>
+    </div>
+
+    <div id="welcome-leave" class="container">
+      <h2>Welcome & Leave Settings</h2>
+      <label>Welcome Channel:</label>
+      <input type="text" id="welcome-channel" onchange="updateSettings('welcomeChannel', this.value)" />
+      <br />
+      <label>Welcome Message:</label>
+      <input type="text" id="welcome-message" onchange="updateSettings('welcomeMessage', this.value)" />
+      <br />
+      <label>Leave Channel:</label>
+      <input type="text" id="leave-channel" onchange="updateSettings('leaveChannel', this.value)" />
+      <br />
+      <label>Leave Message:</label>
+      <input type="text" id="leave-message" onchange="updateSettings('leaveMessage', this.value)" />
+    </div>
+
+    <div id="partnerships" class="container">
+      <h2>Partnership Settings</h2>
+      <label>Partner Channel:</label>
+      <input type="text" id="partner-channel" onchange="updateSettings('partnerChannel', this.value)" />
+      <br />
+      <label>Partner Role:</label>
+      <input type="text" id="partner-role" onchange="updateSettings('partnerRole', this.value)" />
+    </div>
+  </body>
+</html>
