@@ -12,9 +12,11 @@ router.get("/:serverId", async (req, res) => {
       prefix: settings.prefix,
       language: settings.language,
       welcomeChannel: settings.welcomeChannel,
-      welcomeMessage: settings.welcomeMessage,
+      welcomeEmbed: settings.welcomeEmbed,
+      
       leaveChannel: settings.leaveChannel,
-      leaveMessage: settings.leaveMessage,
+      leaveEmbed: settings.leaveEmbed,
+
       partnerChannel: settings.partnerChannel,
       partnershipRole: settings.partnershipRole,
       partnerRole: settings.partnerRole,
