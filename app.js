@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const colors = require("colors");
 const config = require("../src/config.js");
 const app = express();
-const client = require("../index.js"); // Import klienta bota
+const client = require("../index.js");
 
 const botTestingMode = config.botTestingMode;
 const address = botTestingMode ? "http://localhost" : config.web.address;
@@ -47,12 +47,12 @@ fs.readdirSync(path.join(__dirname, "routes")).forEach((file) => {
   if (file.endsWith(".js")) {
     const route = require(`./routes/${file}`);
     const routeName = file === "index.js" ? "/" : `/api/${file.replace(".js", "")}`;
-    console.log(`✅ Załadowano trasę: ${routeName}`);
+    client.log(`✅ Załadowano trasę: ${routeName}`);
     app.use(routeName, route);
   }
 });
 
 // Uruchomienie serwera
 app.listen(port, () => {
-  console.log(`Server running on ${address}:${port}`.green);
+  client.log(`Server running on ${address}:${port}`.green);
 });
