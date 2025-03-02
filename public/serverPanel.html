@@ -56,29 +56,85 @@
     <script>
       let serverId = window.location.pathname.split("/")[3];
 
-      async function loadOverview() {
-        const response = await fetch(`/api/serverPanel/${serverId}`);
-        const stats = await response.json();
+      async function loadServerData() {
+        try {
+          const responseStats = await fetch(`/api/serverStats/${serverId}`);
+          const stats = await responseStats.json();
 
-        document.getElementById("overview-name").innerText = stats.name;
-        document.getElementById("overview-id").innerText = "Server ID: " + stats.id;
-        document.getElementById("member-count").innerText = "Members: " + stats.totalUsers;
-        document.getElementById("channel-count").innerText = "Total Channels: " + stats.totalChannels;
-        document.getElementById("role-count").innerText = "Total Roles: " + stats.totalRoles;
-      }
+          const responseSettings = await fetch(`/api/serverSettings/${serverId}`);
+          const settings = await responseSettings.json();
 
-      async function loadSettings() {
-        const response = await fetch(`/api/serverSettings/${serverId}`);
-        const settings = await response.json();
+          if (stats.error) {
+            alert(stats.error);
+            return;
+          }
 
-        document.getElementById("prefix").value = settings.prefix;
-        document.getElementById("language").value = settings.language;
-        document.getElementById("welcome-channel").value = settings.welcomeChannel || "";
-        document.getElementById("leave-channel").value = settings.leaveChannel || "";
-        document.getElementById("welcome-message").value = settings.welcomeMessage || "";
-        document.getElementById("leave-message").value = settings.leaveMessage || "";
-        document.getElementById("partner-channel").value = settings.partnerChannel || "";
-        document.getElementById("partner-role").value = settings.partnerRole || "";
+          // Ustawienia ogólne serwera
+          document.getElementById("overview-icon").src = stats.avatar;
+          document.getElementById("overview-name").innerText = stats.name;
+          document.getElementById("overview-owner").innerText = "Owner: " + stats.ownerName;
+          document.getElementById("overview-id").innerText = "Server ID: " + serverId;
+          document.getElementById("overview-members").innerText = "Members: " + stats.totalUsers;
+          document.getElementById("overview-text-channels").innerText = "Text Channels: " + stats.totalTextChannels;
+          document.getElementById("overview-voice-channels").innerText = "Voice Channels: " + stats.totalVoiceChannels;
+          document.getElementById("overview-roles").innerText = "Roles: " + stats.totalRoles;
+          document.getElementById("overview-emojis").innerText = "Emojis: " + stats.totalEmojis;
+          document.getElementById("overview-bans").innerText = "Banned Users: " + stats.totalBans;
+          document.getElementById("overview-stickers").innerText = "Stickers: " + stats.totalStickers;
+          document.getElementById("overview-nitro").innerText = "Nitro Level: " + stats.nitroLevel;
+          document.getElementById("overview-region").innerText = "Region: " + stats.region;
+          document.getElementById("overview-verification").innerText = "Verification Level: " + stats.verificationLevel;
+          document.getElementById("overview-features").innerText = "Features: " + stats.features;
+          document.getElementById("overview-vanity").innerText = "Vanity URL: " + stats.vanityURL;
+
+          // Prefix
+          document.getElementById("prefix").value = settings.prefix;
+
+          // Language
+          document.getElementById("language").value = settings.language;
+
+          // Partner
+          document.getElementById("partner-channel").value = settings.partnerChannel;
+          document.getElementById("partnership-role").value = settings.partnershipRole;
+          document.getElementById("partner-role").value = settings.partnerRole;
+          document.getElementById("partner-ping-role").value = settings.partnerPingRole;
+
+          // Pobranie kanałów i ról
+          const [textChannels, voiceChannels, roles] = await Promise.all([
+            fetch(`/api/serverStats/serverTextChannels/${serverId}`).then((res) => res.json()),
+            fetch(`/api/serverStats/serverVoiceChannels/${serverId}`).then((res) => res.json()),
+            fetch(`/api/serverStats/serverRoles/${serverId}`).then((res) => res.json()),
+          ]);
+
+          console.log("Text Channels Response:", textChannels);
+          console.log("Voice Channels Response:", voiceChannels);
+          console.log("Roles Response:", roles);
+
+          // Ustawienia dropdownów
+          function populateSelect(elementId, options, placeholder, savedValue = "") {
+            const select = document.getElementById(elementId);
+            select.innerHTML = ""; // Czyścimy dropdown
+
+            // Jeśli istnieje zapisana wartość i jest wśród dostępnych opcji, ustaw ją jako domyślną
+            let defaultOption = `<option value=''>${placeholder}</option>`;
+            if (savedValue && options.some((opt) => opt.id === savedValue)) {
+              defaultOption = "";
+            }
+
+            select.innerHTML =
+              defaultOption +
+              options.map((opt) => `<option value="${opt.id}" ${opt.id === savedValue ? "selected" : ""}>${opt.name}</option>`).join("");
+          }
+
+          populateSelect("welcome-channel", textChannels, "Select a Text Channel", settings.welcomeChannel);
+          populateSelect("leave-channel", textChannels, "Select a Text Channel", settings.leaveChannel);
+          populateSelect("partner-channel", textChannels, "Select a Text Channel", settings.partnerChannel);
+          populateSelect("partnership-role", roles, "Select a Role", settings.partnershipRole);
+          populateSelect("partner-role", roles, "Select a Role", settings.partnerRole);
+          populateSelect("partner-ping-role", roles, "Select a Role", settings.partnerPingRole);
+        } catch (error) {
+          console.error("Error loading server data:", error);
+        }
       }
 
       async function updateSettings(field, value) {
@@ -95,9 +151,9 @@
         document.getElementById(section).style.display = "block";
       }
 
-      window.onload = async function () {
-        await loadOverview();
-        await loadSettings();
+      // Wywołanie funkcji po załadowaniu strony
+      window.onload = function () {
+        loadServerData();
         showSection("overview");
       };
     </script>
@@ -112,11 +168,22 @@
 
     <div id="overview" class="container">
       <h2>Server Overview</h2>
+      <img id="overview-icon" src="" alt="Server Icon" width="100" height="100" />
       <p id="overview-name">Loading...</p>
       <p id="overview-id"></p>
-      <p id="member-count"></p>
-      <p id="channel-count"></p>
-      <p id="role-count"></p>
+      <p id="overview-owner">Owner: Loading...</p>
+      <p id="overview-members">Members: Loading...</p>
+      <p id="overview-text-channels">Text Channels: Loading...</p>
+      <p id="overview-voice-channels">Voice Channels: Loading...</p>
+      <p id="overview-roles">Roles: Loading...</p>
+      <p id="overview-emojis">Emojis: Loading...</p>
+      <p id="overview-bans">Banned Users: Loading...</p>
+      <p id="overview-stickers">Stickers: Loading...</p>
+      <p id="overview-nitro">Nitro Level: Loading...</p>
+      <p id="overview-region">Region: Loading...</p>
+      <p id="overview-verification">Verification Level: Loading...</p>
+      <p id="overview-features">Features: Loading...</p>
+      <p id="overview-vanity">Vanity URL: Loading...</p>
     </div>
 
     <div id="general" class="container">
@@ -134,13 +201,13 @@
     <div id="welcome-leave" class="container">
       <h2>Welcome & Leave Settings</h2>
       <label>Welcome Channel:</label>
-      <input type="text" id="welcome-channel" onchange="updateSettings('welcomeChannel', this.value)" />
+      <select id="welcome-channel" onchange="updateSettings('welcomeChannel', this.value)"></select>
       <br />
       <label>Welcome Message:</label>
       <input type="text" id="welcome-message" onchange="updateSettings('welcomeMessage', this.value)" />
       <br />
       <label>Leave Channel:</label>
-      <input type="text" id="leave-channel" onchange="updateSettings('leaveChannel', this.value)" />
+      <select id="leave-channel" onchange="updateSettings('leaveChannel', this.value)"></select>
       <br />
       <label>Leave Message:</label>
       <input type="text" id="leave-message" onchange="updateSettings('leaveMessage', this.value)" />
@@ -149,10 +216,16 @@
     <div id="partnerships" class="container">
       <h2>Partnership Settings</h2>
       <label>Partner Channel:</label>
-      <input type="text" id="partner-channel" onchange="updateSettings('partnerChannel', this.value)" />
+      <select id="partner-channel" onchange="updateSettings('partnerChannel', this.value)"></select>
+      <br />
+      <label>Partnership Role:</label>
+      <select id="partnership-role" onchange="updateSettings('partnershipRole', this.value)"></select>
       <br />
       <label>Partner Role:</label>
-      <input type="text" id="partner-role" onchange="updateSettings('partnerRole', this.value)" />
+      <select id="partner-role" onchange="updateSettings('partnerRole', this.value)"></select>
+      <br />
+      <label>Partner Ping Role:</label>
+      <select id="partner-ping-role" onchange="updateSettings('partnerPingRole', this.value)"></select>
     </div>
   </body>
 </html>
