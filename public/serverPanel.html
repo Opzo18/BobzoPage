@@ -244,6 +244,29 @@
           document.getElementById("partner-role").value = settings.partnerRole;
           document.getElementById("partner-ping-role").value = settings.partnerPingRole;
 
+          // Wypełnianie pól Welcome Embed (jeśli są zapisane ustawienia)
+          if (settings.welcomeEmbed) {
+            document.getElementById("welcome-embed-title-input").value = settings.welcomeEmbed.title || "";
+            document.getElementById("welcome-embed-description-input").value = settings.welcomeEmbed.description || "";
+            document.getElementById("welcome-color").value = settings.welcomeEmbed.color || "#7289da";
+            document.getElementById("welcome-embed-image").value = settings.welcomeEmbed.imageUrl || "";
+            document.getElementById("welcome-embed-footer").value = settings.welcomeEmbed.footer || "";
+          }
+
+          console.log(settings.welcomeEmbed);
+
+          // Wypełnianie pól Leave Embed (jeśli są zapisane ustawienia)
+          if (settings.leaveEmbed) {
+            document.getElementById("leave-embed-title-input").value = settings.leaveEmbed.title || "";
+            document.getElementById("leave-embed-description-input").value = settings.leaveEmbed.description || "";
+            document.getElementById("leave-color").value = settings.leaveEmbed.color || "#7289da";
+            document.getElementById("leave-embed-image").value = settings.leaveEmbed.imageUrl || "";
+            document.getElementById("leave-embed-footer").value = settings.leaveEmbed.footer || "";
+          }
+
+          // Aktualizacja podglądu embeda
+          updateEmbed();
+
           // Pobranie kanałów i ról
           const [textChannels, voiceChannels, roles] = await Promise.all([
             fetch(`/api/serverStats/serverTextChannels/${serverId}`).then((res) => res.json()),
@@ -251,9 +274,9 @@
             fetch(`/api/serverStats/serverRoles/${serverId}`).then((res) => res.json()),
           ]);
 
-          console.log("Text Channels Response:", textChannels);
-          console.log("Voice Channels Response:", voiceChannels);
-          console.log("Roles Response:", roles);
+          // console.log("Text Channels Response:", textChannels);
+          // console.log("Voice Channels Response:", voiceChannels);
+          // console.log("Roles Response:", roles);
 
           // Ustawienia dropdownów
           function populateSelect(elementId, options, placeholder, savedValue = "") {
@@ -287,12 +310,15 @@
       }
 
       async function updateSettings(field, value) {
-        await fetch(`/api/serverSettings/${serverId}`, {
+        const response = await fetch(`/api/serverSettings/${serverId}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ [field]: value }),
         });
-        alert("Settings updated!");
+
+        const result = await response.json();
+        console.log("API response:", result);
+        alert(result.message || "Settings updated!");
       }
 
       function showSection(section) {
@@ -316,7 +342,7 @@
         if (event) {
           inputId = event.target.id;
         } else {
-          console.warn("updateEmbed() wywołane bez eventu – sprawdzam wartości ręcznie.");
+          console.warn("updateEmbed() wywołane bez eventu - sprawdzam wartości ręcznie.");
         }
 
         // Ustalanie prefixu (welcome/leave)
@@ -348,8 +374,8 @@
         }
 
         // Pobieramy wartości
-        const title = titleInput.value || "Embed Title";
-        const description = descriptionInput.value || "Embed Description";
+        const title = titleInput.value;
+        const description = descriptionInput.value;
         const color = colorInput.value;
         const imageUrl = imageInput.value;
         const footer = footerInput.value;
@@ -368,6 +394,48 @@
         }
 
         document.getElementById(`${prefix}-embed-footer-text`).innerText = footer;
+      }
+
+      async function saveEmbedSettings() {
+        // Pobieranie wartości Welcome Embed
+        const welcomeEmbed = {
+          title: document.getElementById("welcome-embed-title-input").value,
+          description: document.getElementById("welcome-embed-description-input").value,
+          color: document.getElementById("welcome-color").value,
+          imageUrl: document.getElementById("welcome-embed-image").value,
+          footer: document.getElementById("welcome-embed-footer").value,
+        };
+
+        // Pobieranie wartości Leave Embed
+        const leaveEmbed = {
+          title: document.getElementById("leave-embed-title-input").value,
+          description: document.getElementById("leave-embed-description-input").value,
+          color: document.getElementById("leave-color").value,
+          imageUrl: document.getElementById("leave-embed-image").value,
+          footer: document.getElementById("leave-embed-footer").value,
+        };
+
+        // Wysyłanie danych do API
+        try {
+          const response = await fetch(`/api/serverSettings/${serverId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              welcomeEmbed,
+              leaveEmbed,
+            }),
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            alert("Embed settings updated successfully!");
+          } else {
+            alert("Failed to update settings: " + (result.error || "Unknown error"));
+          }
+        } catch (error) {
+          console.error("Error saving embed settings:", error);
+          alert("An error occurred while saving settings.");
+        }
       }
 
       // Dodajemy nasłuchiwanie zdarzeń po załadowaniu strony

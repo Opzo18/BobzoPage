@@ -8,7 +8,7 @@ const botTestingMode = config.botTestingMode;
 
 const CLIENT_ID = botTestingMode ? config.clientIDTest : config.clientID;
 const CLIENT_SECRET = botTestingMode ? config.clientSecretTest : config.clientSecret;
-const REDIRECT_URI = botTestingMode ? "http://localhost:55055/api/auth/callback" : config.web.address + "/api/auth/callback";
+const REDIRECT_URI = botTestingMode ? "http://localhost:55055/api/auth/callback" : config.web.address + ":" + config.web.port + "/api/auth/callback";
 
 // 1️⃣ Generowanie linku do logowania przez Discord
 router.get("/login", (req, res) => {
