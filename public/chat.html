@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bobzo Chat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #1e1e2e;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      #chat-container {
+        width: 90%;
+        max-width: 800px;
+        background: #282a36;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 500px;
+        overflow-y: auto;
+        border-bottom: 2px solid #44475a;
+      }
+
+      li {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        background: #44475a;
+        animation: fadeIn 0.3s ease-in-out;
+        overflow-wrap: break-word;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Stylowanie paska przewijania */
+      ul::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ul::-webkit-scrollbar-track {
+        background: #282a36;
+        border-radius: 10px;
+      }
+
+      ul::-webkit-scrollbar-thumb {
+        background: #50fa7b;
+        border-radius: 10px;
+      }
+
+      ul::-webkit-scrollbar-thumb:hover {
+        background: #40d37a;
+      }
+
+      #form {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      #input {
+        flex-grow: 1;
+        padding: 12px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        background: #6272a4;
+        color: white;
+        font-size: 16px;
+      }
+
+      #input::placeholder {
+        color: rgb(204, 198, 198);
+      }
+
+      button {
+        background: #50fa7b;
+        color: black;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background: #40d37a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chat-container">
+      <ul id="messages"></ul>
+      <form id="form">
+        <input id="input" autocomplete="off" placeholder="Write a message..." />
+        <button>Send</button>
+      </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const form = document.getElementById("form");
+      const input = document.getElementById("input");
+      const messages = document.getElementById("messages");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (input.value) {
+          socket.emit("chat message", input.value);
+          input.value = "";
+          input.focus();
+        }
+      });
+
+      let historyLoaded = false;
+
+      socket.on("chat history", (history) => {
+        if (historyLoaded) return;
+        historyLoaded = true;
+
+        messages.innerHTML = "";
+
+        history.forEach((msg) => {
+          const item = document.createElement("li");
+          item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+          messages.appendChild(item);
+        });
+        messages.scrollTop = messages.scrollHeight;
+      });
+
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+        item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
+      });
+    </script>
+  </body>
+</html>
