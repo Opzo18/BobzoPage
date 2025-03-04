@@ -35,33 +35,6 @@
         border-bottom: 2px solid #44475a;
       }
 
-      li {
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 5px;
-        background: #44475a;
-        animation: fadeIn 0.3s ease-in-out;
-        overflow-wrap: break-word;
-      }
-
-      pre {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        max-width: 100%;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(-5px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
       /* Stylowanie paska przewijania */
       ul::-webkit-scrollbar {
         width: 8px;
@@ -81,6 +54,54 @@
         background: #40d37a;
       }
 
+      li {
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        background: #44475a;
+        animation: fadeIn 0.3s ease-in-out;
+        overflow-wrap: break-word;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        position: relative;
+        background: #1e1e2e;
+        padding: 10px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #50fa7b;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 12px;
+      }
+
+      .copy-btn:hover {
+        background: #40d37a;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       #form {
         display: flex;
         gap: 10px;
@@ -98,9 +119,6 @@
         color: white;
         font-size: 16px;
         resize: none;
-      }
-
-      #input {
         min-height: 40px;
         max-height: 300px;
         overflow-y: auto;
@@ -154,7 +172,7 @@
       <ul id="messages"></ul>
       <form id="form">
         <textarea id="input" autocomplete="off" placeholder="Write a message..." required></textarea>
-        <button>Send</button>
+        <button type="submit">Send</button>
       </form>
     </div>
 
@@ -183,7 +201,7 @@
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        let message = input.value.trimEnd();
+        let message = input.value.trim();
 
         if (message) {
           socket.emit("chat message", message);
@@ -192,32 +210,71 @@
         }
       });
 
+      socket.on("chat message", (msg) => {
+        const item = document.createElement("li");
+
+        if (msg.message.startsWith("```") && msg.message.endsWith("```")) {
+          const codeContent = msg.message.slice(3, -3);
+          item.innerHTML = `
+            [${new Date(msg.time).toLocaleTimeString()}] 
+            <strong>${escapeHTML(msg.user)}</strong>: 
+            <pre>
+              <code>${escapeHTML(codeContent)}</code>
+              <button class="copy-btn">Copy</button>
+            </pre>
+          `;
+        } else {
+          item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
+            msg.message
+          )}</pre>`;
+        }
+
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
+      });
+
+      document.addEventListener("click", (event) => {
+        if (event.target.classList.contains("copy-btn")) {
+          const preElement = event.target.closest("pre");
+          if (!preElement) return;
+
+          const codeContent = preElement.querySelector("code").innerText;
+          navigator.clipboard.writeText(codeContent).then(() => {
+            event.target.textContent = "Copied!";
+            setTimeout(() => (event.target.textContent = "Copy"), 1500);
+          });
+        }
+      });
+
       let historyLoaded = false;
 
       socket.on("chat history", (history) => {
         if (historyLoaded) return;
         historyLoaded = true;
-
         messages.innerHTML = "";
 
         history.forEach((msg) => {
           const item = document.createElement("li");
-          item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
-            msg.message
-          )}</pre>`;
+
+          if (msg.message.startsWith("```") && msg.message.endsWith("```")) {
+            const codeContent = msg.message.slice(3, -3);
+            item.innerHTML = `
+              [${new Date(msg.time).toLocaleTimeString()}] 
+              <strong>${escapeHTML(msg.user)}</strong>: 
+              <pre>
+                <code>${escapeHTML(codeContent)}</code>
+                <button class="copy-btn">Copy</button>
+              </pre>
+            `;
+          } else {
+            item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
+              msg.message
+            )}</pre>`;
+          }
 
           messages.appendChild(item);
         });
-        messages.scrollTop = messages.scrollHeight;
-      });
 
-      socket.on("chat message", (msg) => {
-        const item = document.createElement("li");
-        item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
-          msg.message
-        )}</pre>`;
-
-        messages.appendChild(item);
         messages.scrollTop = messages.scrollHeight;
       });
     </script>
