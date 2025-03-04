@@ -19,7 +19,7 @@
 
       #chat-container {
         width: 90%;
-        max-width: 800px;
+        max-width: 1000px;
         background: #282a36;
         border-radius: 10px;
         padding: 20px;
@@ -30,7 +30,7 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        max-height: 500px;
+        max-height: 600px;
         overflow-y: auto;
         border-bottom: 2px solid #44475a;
       }
@@ -42,6 +42,13 @@
         background: #44475a;
         animation: fadeIn 0.3s ease-in-out;
         overflow-wrap: break-word;
+      }
+
+      pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
       }
 
       @keyframes fadeIn {
@@ -78,6 +85,7 @@
         display: flex;
         gap: 10px;
         margin-top: 15px;
+        align-items: flex-end;
       }
 
       #input {
@@ -89,10 +97,37 @@
         background: #6272a4;
         color: white;
         font-size: 16px;
+        resize: none;
+      }
+
+      #input {
+        min-height: 40px;
+        max-height: 300px;
+        overflow-y: auto;
+        transition: 0.2s ease-in-out;
       }
 
       #input::placeholder {
         color: rgb(204, 198, 198);
+      }
+
+      /* Stylowanie paska przewijania dla textarea */
+      #input::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      #input::-webkit-scrollbar-track {
+        background: #44475a;
+        border-radius: 10px;
+      }
+
+      #input::-webkit-scrollbar-thumb {
+        background: #50fa7b;
+        border-radius: 10px;
+      }
+
+      #input::-webkit-scrollbar-thumb:hover {
+        background: #40d37a;
       }
 
       button {
@@ -104,6 +139,9 @@
         cursor: pointer;
         transition: 0.3s;
         font-size: 16px;
+        height: 45px;
+        align-items: center;
+        display: flex;
       }
 
       button:hover {
@@ -115,22 +153,40 @@
     <div id="chat-container">
       <ul id="messages"></ul>
       <form id="form">
-        <input id="input" autocomplete="off" placeholder="Write a message..." />
+        <textarea id="input" autocomplete="off" placeholder="Write a message..." required></textarea>
         <button>Send</button>
       </form>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
       const socket = io();
       const form = document.getElementById("form");
       const input = document.getElementById("input");
       const messages = document.getElementById("messages");
 
+      input.addEventListener("input", () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 200) + "px";
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          form.dispatchEvent(new Event("submit"));
+        }
+      });
+
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        if (input.value) {
-          socket.emit("chat message", input.value);
+        let message = input.value.trimEnd();
+
+        if (message) {
+          socket.emit("chat message", message);
           input.value = "";
           input.focus();
         }
@@ -146,7 +202,10 @@
 
         history.forEach((msg) => {
           const item = document.createElement("li");
-          item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+          item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
+            msg.message
+          )}</pre>`;
+
           messages.appendChild(item);
         });
         messages.scrollTop = messages.scrollHeight;
@@ -154,7 +213,10 @@
 
       socket.on("chat message", (msg) => {
         const item = document.createElement("li");
-        item.textContent = `[${new Date(msg.time).toLocaleTimeString()}] ${msg.user}: ${msg.message}`;
+        item.innerHTML = `[${new Date(msg.time).toLocaleTimeString()}] <strong>${escapeHTML(msg.user)}</strong>: <pre>${escapeHTML(
+          msg.message
+        )}</pre>`;
+
         messages.appendChild(item);
         messages.scrollTop = messages.scrollHeight;
       });

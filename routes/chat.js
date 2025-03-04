@@ -54,7 +54,11 @@ module.exports.setupChatSocket = function setupChatSocket(io) {
 
     socket.on("chat message", (msg) => {
       console.log(`Message from ${socket.id}: ${msg}`);
-      const messageData = { user: socket.id, message: msg, time: new Date().toISOString() };
+      const messageData = {
+        user: socket.id,
+        message: msg,
+        time: new Date().toISOString(),
+      };
       messages.push(messageData);
       fs.writeFileSync(chatFile, JSON.stringify(messages, null, 2));
       io.emit("chat message", messageData);
