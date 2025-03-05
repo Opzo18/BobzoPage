@@ -10,6 +10,19 @@ const CLIENT_ID = botTestingMode ? config.clientIDTest : config.clientID;
 const CLIENT_SECRET = botTestingMode ? config.clientSecretTest : config.clientSecret;
 const REDIRECT_URI = botTestingMode ? "http://localhost:55055/api/auth/callback" : config.web.address + ":" + config.web.port + "/api/auth/callback";
 
+// 🎯 Dynamiczny link do dodania bota
+router.get("/invite", (req, res) => {
+  const { guild_id } = req.query;
+  const permissions = 8; // Admin permissions
+  let inviteUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=bot&permissions=${permissions}`;
+
+  if (guild_id) {
+    inviteUrl += `&guild_id=${guild_id}`;
+  }
+
+  res.json({ inviteUrl });  
+});
+
 // 1️⃣ Generowanie linku do logowania przez Discord
 router.get("/login", (req, res) => {
   const discordAuthUrl = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(

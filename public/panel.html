@@ -51,7 +51,7 @@
           if (!data.loggedIn) {
             window.location.href = "/api/auth/login";
           } else {
-            document.getElementById("user-info").innerText = `Logged in as: ${data.user.username}#${data.user.discriminator}`;
+            document.getElementById("user-info").innerText = `Logged in as: ${data.user.username}`;
             loadServers();
           }
         } catch (error) {
@@ -69,7 +69,13 @@
           serversContainer.innerHTML = "";
 
           if (servers.length === 0) {
-            serversContainer.innerHTML = "<p>You are not an admin on any servers.</p>";
+            const inviteResponse = await fetch("/api/auth/invite");
+            const { inviteUrl } = await inviteResponse.json();
+
+            serversContainer.innerHTML = `
+        <p>You are not an admin on any servers.</p>
+        <p><a href="${inviteUrl}" style="color: #7289da; text-decoration: none; font-weight: bold;">Add Bot to Your Server</a></p>
+      `;
             return;
           }
 

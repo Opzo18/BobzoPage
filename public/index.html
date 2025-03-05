@@ -9,43 +9,46 @@
         font-family: Arial, sans-serif;
         text-align: center;
         margin: 50px;
-        background-color: #1e1e2e;
+        background-color: #0d1117;
         color: white;
       }
       h1 {
-        font-size: 2.5em;
+        font-size: 3em;
+        margin-bottom: 10px;
       }
       .description {
-        max-width: 600px;
+        max-width: 700px;
         margin: 20px auto;
-        font-size: 1.2em;
+        font-size: 1.3em;
+        opacity: 0.9;
       }
       .features {
         text-align: left;
-        max-width: 500px;
-        margin: 20px auto;
+        max-width: 600px;
+        margin: 30px auto;
       }
       .feature-item {
-        margin: 10px 0;
-        font-size: 1.1em;
+        margin: 12px 0;
+        font-size: 1.2em;
       }
       .commands {
-        margin-top: 20px;
+        margin-top: 30px;
       }
       .command-category {
-        font-size: 1.2em;
+        font-size: 1.3em;
         font-weight: bold;
-        margin: 10px 0;
+        margin: 12px 0;
       }
       .btn {
         display: inline-block;
-        margin-top: 20px;
-        padding: 10px 20px;
+        margin: 15px;
+        padding: 12px 24px;
         font-size: 1.2em;
         color: white;
         background-color: #5865f2;
         text-decoration: none;
         border-radius: 8px;
+        transition: 0.3s;
       }
       .btn:hover {
         background-color: #4752c4;
@@ -57,23 +60,24 @@
       #panel-btn:hover {
         background-color: #e68900;
       }
+      #login-btn {
+        display: inline-block;
+      }
     </style>
   </head>
   <body>
-    <h1>Welcome to Bobzo</h1>
+    <h1>Meet Bobzo, Your Ultimate Discord Bot</h1>
 
     <p class="description">
-      Bobzo is your ultimate Discord companion, designed to enhance your server with powerful moderation, engaging interactions, fun activities, and a
-      rewarding economy system. Whether you're managing a thriving community or just hanging out with friends, Bobzo makes everything easier and more
-      entertaining. Customize it to fit your needs and watch your server come to life!
+      Elevate your Discord server with Bobzo - the all-in-one assistant for moderation, fun, economy, and interactive features. Whether you need smart
+      automation, engaging games, or a custom economy system, Bobzo has you covered!
     </p>
 
     <div class="features">
-      <p class="feature-item">✅ <strong>Smart Moderation</strong> – Automate bans, warnings, and anti-spam protection effortlessly.</p>
-      <p class="feature-item">✅ <strong>Engaging Interactions</strong> – Unique commands to make your Discord server more interactive.</p>
-      <p class="feature-item">✅ <strong>Fun & Games</strong> – A variety of entertaining commands, including memes, trivia, and more!</p>
-      <p class="feature-item">✅ <strong>Economy System</strong> – Build a virtual economy with custom currencies, shops, and rewards.</p>
-      <p class="feature-item">✅ <strong>Image Generation</strong> – Generate memes, edit images, and more with powerful image tools.</p>
+      <p class="feature-item">✅ <strong>Economy System</strong> - Earn, spend, and manage virtual currency with jobs, shops, gambling, and more.</p>
+      <p class="feature-item">✅ <strong>Fun Commands</strong> - Play games like 8ball, rock-paper-scissors, or test your IQ.</p>
+      <p class="feature-item">✅ <strong>Interactions</strong> - Kiss, hug, or punch your friends.</p>
+      <p class="feature-item">✅ <strong>Mini-Games</strong> - Try blackjack, roulette, or rob others to climb the leaderboard.</p>
     </div>
 
     <div class="commands">
@@ -84,9 +88,9 @@
       <p class="command-category">💰 Economy</p>
     </div>
 
-    <a href="/api/auth/login" class="btn">Login with Discord</a>
-    <a href="/api/panel" class="btn" id="panel-btn" style="display: none">Go to Panel</a>
-    <a href="/api/auth/logout" class="btn" id="logout-btn" style="display: none; background-color: red">Logout</a>
+    <a href="/api/auth/login" class="btn" id="login-btn">Login with Discord</a>
+    <a href="/api/panel" class="btn" id="panel-btn">Go to Panel</a>
+    <a href="_blank" class="btn" id="invite-btn" style="background-color: #43b581"> ➕ Add Bobzo to Your Server </a>
 
     <script>
       async function checkLogin() {
@@ -95,10 +99,23 @@
 
         if (data.loggedIn) {
           document.getElementById("panel-btn").style.display = "inline-block";
-          document.getElementById("logout-btn").style.display = "inline-block";
+          document.getElementById("login-btn").style.display = "none";
+        } else {
+          document.getElementById("login-btn").style.display = "inline-block";
         }
       }
 
+      async function updateInviteLink() {
+        try {
+          const response = await fetch("/api/auth/invite");
+          const data = await response.json();
+          document.getElementById("invite-btn").href = data.inviteUrl;
+        } catch (error) {
+          console.error("Failed to fetch invite link:", error);
+        }
+      }
+
+      updateInviteLink();
       checkLogin();
     </script>
   </body>

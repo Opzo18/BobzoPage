@@ -238,7 +238,10 @@
           const preElement = event.target.closest("pre");
           if (!preElement) return;
 
-          const codeContent = preElement.querySelector("code").innerText;
+          const codeElement = preElement.querySelector("code");
+          if (!codeElement) return;
+
+          const codeContent = codeElement.textContent;
           navigator.clipboard.writeText(codeContent).then(() => {
             event.target.textContent = "Copied!";
             setTimeout(() => (event.target.textContent = "Copy"), 1500);
