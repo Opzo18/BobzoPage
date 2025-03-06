@@ -6,6 +6,7 @@ const router = express.Router();
 
 const chatDir = path.join(__dirname, "../assets/json");
 const chatFile = path.join(chatDir, "chatHistory.json");
+const MESSAGE_LIMIT = 200;
 
 // Tworzenie folderu i pliku, jeśli nie istnieją
 if (!fs.existsSync(chatDir)) {
@@ -16,6 +17,14 @@ if (!fs.existsSync(chatFile)) {
 }
 
 let messages = JSON.parse(fs.readFileSync(chatFile, "utf8"));
+
+// Funkcja do zapisu historii czatu z limitem wiadomości
+const saveChatHistory = () => {
+  if (messages.length > MESSAGE_LIMIT) {
+    messages = messages.slice(-MESSAGE_LIMIT); 
+  }
+  fs.writeFileSync(chatFile, JSON.stringify(messages, null, 2));
+};
 
 // Strona czatu
 router.get("/", (req, res) => {
@@ -36,7 +45,7 @@ router.post("/message", (req, res) => {
 
   const messageData = { user, message, time: new Date().toISOString() };
   messages.push(messageData);
-  fs.writeFileSync(chatFile, JSON.stringify(messages, null, 2));
+  saveChatHistory();
 
   // Emituj wiadomość przez Socket.IO
   req.app.get("io").emit("chat message", messageData);
@@ -60,7 +69,7 @@ module.exports.setupChatSocket = function setupChatSocket(io) {
         time: new Date().toISOString(),
       };
       messages.push(messageData);
-      fs.writeFileSync(chatFile, JSON.stringify(messages, null, 2));
+      saveChatHistory();
       io.emit("chat message", messageData);
     });
 
